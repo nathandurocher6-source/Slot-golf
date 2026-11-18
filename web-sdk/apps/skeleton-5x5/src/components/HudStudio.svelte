@@ -5,6 +5,7 @@
 	import { OnHotkey } from 'components-shared';
 	import { numberToCurrencyString } from 'utils-shared/amount';
 	import { getContext } from '../game/context';
+	import MascotGolfer from './MascotGolfer.svelte';
 
 	const context = getContext();
 
@@ -130,33 +131,81 @@
 
 <OnHotkey hotkey="Space" disabled={isIdle && !canAffordBet} onpress={spinOrStop} />
 
-<!-- Top Brand Header Bar -->
+<!-- Cartoon Golfer Mascot on Fairway Flank (Desktop only) -->
+<MascotGolfer />
+
+<!-- Top Brand Header Bar: FAIRWAY CHAMPIONS Stylized Golf Logo -->
 <div class="studio-top-bar">
-	<div class="top-title">
-		<span class="top-badge">GREYBOX</span>
-		<span class="top-name">SKELETON 5X5</span>
+	<div class="logo-badge-wrap">
+		<!-- Golf Logo Icon with Crossed Clubs and Dimpled Golf Ball -->
+		<svg class="logo-icon" width="38" height="38" viewBox="0 0 48 48" fill="none">
+			<!-- Crossed Iron Clubs -->
+			<path d="M8 40 L38 10" stroke="#facc15" stroke-width="4.5" stroke-linecap="round" />
+			<path d="M40 40 L10 10" stroke="#facc15" stroke-width="4.5" stroke-linecap="round" />
+			<path d="M38 10 Q44 6 42 14 Z" fill="#ffffff" stroke="#000000" stroke-width="2" />
+			<path d="M10 10 Q4 6 6 14 Z" fill="#ffffff" stroke="#000000" stroke-width="2" />
+			<!-- Golden Championship Disc -->
+			<circle cx="24" cy="24" r="14" fill="#062215" stroke="#facc15" stroke-width="3" />
+			<!-- Golf Ball in Center -->
+			<circle cx="24" cy="24" r="8" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+			<circle cx="22" cy="22" r="1" fill="#cbd5e1" />
+			<circle cx="26" cy="22" r="1" fill="#cbd5e1" />
+			<circle cx="24" cy="25" r="1" fill="#cbd5e1" />
+		</svg>
+
+		<div class="logo-text-block">
+			<div class="logo-title-row">
+				<span class="logo-fairway">FAIRWAY</span>
+				<span class="logo-champions">CHAMPIONS</span>
+			</div>
+			<div class="logo-subline">
+				<span class="subline-badge">96.00% RTP</span>
+				<span class="subline-tag">WINCAP 100 000X</span>
+			</div>
+		</div>
 	</div>
+
 	<div class="top-studio">
 		<span class="studio-tag">STAKE ENGINE</span>
 	</div>
 </div>
 
-<!-- Dedicated Hacksaw/Stake Style BUY BONUS side button (Desktop) -->
+<!-- Dedicated Stake / Hacksaw Style BUY BONUS / BOOSTER side button -->
 {#if context.stateGame.gameType === 'basegame'}
 	<div class="side-bonus-container" class:booster-on={isBoosterActive}>
-		<button class="side-bonus-btn" onclick={openBuyBonus} title="Menu Achat de Bonus">
-			<span class="bonus-tag">{isBoosterActive ? 'ACTIVE' : 'FEATURE'}</span>
-			<span class="bonus-title">{isBoosterActive ? 'BOOSTER 3X' : 'BUY BONUS'}</span>
-			<span class="bonus-subtitle">{isBoosterActive ? 'DESACTIVER' : '100X MISE'}</span>
+		<button class="side-bonus-btn" onclick={openBuyBonus} title="Menu Achat de Bonus / Booster">
+			<!-- Golf Trophy / Cart Icon -->
+			<div class="bonus-icon-badge">
+				{#if isBoosterActive}
+					<!-- Caddie / Golf Cart Icon -->
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="3" y="11" width="18" height="7" rx="2" />
+						<path d="M6 11 L10 5 L17 5 L19 11" />
+						<circle cx="7" cy="18" r="2.5" />
+						<circle cx="17" cy="18" r="2.5" />
+					</svg>
+				{:else}
+					<!-- Golden Trophy Icon -->
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M6 2H18V5C18 8.31 15.31 11 12 11C8.69 11 6 8.31 6 5V2ZM4 4C4 6.76 6.24 9 9 9V7C7.34 7 6 5.66 6 4H4ZM20 4H18C18 5.66 16.66 7 15 7V9C17.76 9 20 6.76 20 4ZM10 13.9C7.03 14.47 5 17.06 5 20.19V22H19V20.19C19 17.06 16.97 14.47 14 13.9V13C14.7 12.65 15.34 12.18 15.88 11.62C14.74 12.47 13.42 13 12 13C10.58 13 9.26 12.47 8.12 11.62C8.66 12.18 9.3 12.65 10 13V13.9Z"/>
+					</svg>
+				{/if}
+			</div>
+
+			<div class="bonus-text-wrap">
+				<span class="bonus-tag">{isBoosterActive ? 'ACTIVE' : 'BONUS'}</span>
+				<span class="bonus-title">{isBoosterActive ? 'CADDIE BOOST' : 'BUY BONUS'}</span>
+				<span class="bonus-subtitle">{isBoosterActive ? 'DESACTIVER 3X' : '100X MISE'}</span>
+			</div>
 		</button>
 	</div>
 {/if}
 
-<!-- Studio Obsidian Bottom HUD Bar -->
+<!-- Studio Obsidian Golf Bottom HUD Bar -->
 <div class="studio-hud-bar">
-	<!-- Left Section: Navigation / Info & Sound -->
+	<!-- Left Section: Navigation / Rules & Sound -->
 	<div class="hud-left">
-		<button class="hud-icon-btn" onclick={openPayTable} title="Règles & Paiements">
+		<button class="hud-icon-btn" onclick={openPayTable} title="Règles & Table des Gains">
 			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
 				<circle cx="12" cy="12" r="10" />
 				<line x1="12" y1="16" x2="12" y2="12" />
@@ -225,7 +274,7 @@
 			{/if}
 		</button>
 
-		<!-- Proeminent Circular SPIN Button -->
+		<!-- Proeminent Circular SPIN Button (Dimpled Golf Championship Design) -->
 		<button
 			class="spin-circle-btn"
 			class:stopping={!isIdle}
@@ -248,15 +297,15 @@
 </div>
 
 <style lang="scss">
-	/* Side BUY BONUS Button (Stake / Hacksaw layout) */
+	/* Side BUY BONUS / CADDIE BOOSTER Button */
 	.side-bonus-container {
 		position: fixed;
 		left: 24px;
-		top: 50%;
+		top: 36%;
 		transform: translateY(-50%);
 		z-index: 60;
 
-		@media (max-width: 960px) {
+		@media (max-width: 1140px) {
 			left: 12px;
 			top: auto;
 			bottom: 84px;
@@ -265,12 +314,12 @@
 	}
 
 	.side-bonus-btn {
-		width: 114px;
-		height: 84px;
-		background: linear-gradient(145deg, #180d28 0%, #0d101d 100%);
-		border: 2px solid #a855f7;
-		border-radius: 14px;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(168, 85, 247, 0.35);
+		width: 126px;
+		height: 92px;
+		background: linear-gradient(145deg, #182619 0%, #0d1512 100%);
+		border: 2px solid #22c55e;
+		border-radius: 16px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 18px rgba(34, 197, 94, 0.35);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -278,20 +327,21 @@
 		gap: 3px;
 		cursor: pointer;
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		color: #ffffff;
 
 		&:hover {
-			transform: scale(1.04);
-			border-color: #c084fc;
-			box-shadow: 0 8px 30px rgba(168, 85, 247, 0.6);
+			transform: scale(1.05);
+			border-color: #4ade80;
+			box-shadow: 0 8px 30px rgba(34, 197, 94, 0.65);
 		}
 
 		&:active {
 			transform: scale(0.96);
 		}
 
-		@media (max-width: 960px) {
+		@media (max-width: 1140px) {
 			width: auto;
-			height: 38px;
+			height: 42px;
 			padding: 0 14px;
 			flex-direction: row;
 			gap: 8px;
@@ -299,10 +349,26 @@
 		}
 	}
 
+	.bonus-icon-badge {
+		color: #facc15;
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+	}
+
 	.side-bonus-container.booster-on .side-bonus-btn {
-		background: linear-gradient(145deg, #072619 0%, #0b1419 100%);
+		background: linear-gradient(145deg, #072619 0%, #061f14 100%);
 		border-color: #00ff88;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 18px rgba(0, 255, 136, 0.45);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 255, 136, 0.5);
+	}
+
+	.side-bonus-container.booster-on .bonus-icon-badge {
+		color: #00ff88;
+	}
+
+	.bonus-text-wrap {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2px;
 	}
 
 	.bonus-tag {
@@ -310,20 +376,20 @@
 		font-size: 8.5px;
 		font-weight: 900;
 		letter-spacing: 1.2px;
-		color: #ffffff;
-		background: #a855f7;
+		color: #052213;
+		background: #facc15;
 		padding: 2px 6px;
 		border-radius: 4px;
 	}
 
 	.side-bonus-container.booster-on .bonus-tag {
 		background: #00ff88;
-		color: #062415;
+		color: #042211;
 	}
 
 	.bonus-title {
 		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 13px;
+		font-size: 12.5px;
 		font-weight: 900;
 		color: #ffffff;
 		letter-spacing: 0.8px;
@@ -333,7 +399,7 @@
 		font-family: system-ui, -apple-system, sans-serif;
 		font-size: 10px;
 		font-weight: 800;
-		color: #c084fc;
+		color: #86efac;
 		letter-spacing: 0.5px;
 	}
 
@@ -341,18 +407,16 @@
 		color: #69f0ae;
 	}
 
-	/* Studio Obsidian Bottom Bar */
+	/* Studio Obsidian Golf Bottom Bar */
 	.studio-hud-bar {
 		position: fixed;
 		bottom: 0;
 		left: 0;
 		right: 0;
 		height: 72px;
-		background: linear-gradient(180deg, rgba(13, 16, 23, 0.94) 0%, rgba(8, 11, 16, 0.98) 100%);
-		border-top: 1px solid #1e2638;
-		box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
+		background: linear-gradient(180deg, rgba(13, 21, 18, 0.98) 0%, rgba(6, 12, 10, 1) 100%);
+		border-top: 1.5px solid #1a3d2b;
+		box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.8), 0 -1px 8px rgba(34, 197, 94, 0.15);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -378,9 +442,9 @@
 		width: 38px;
 		height: 38px;
 		border-radius: 10px;
-		background: #141a26;
-		border: 1px solid #243046;
-		color: #94a3b8;
+		background: #102118;
+		border: 1px solid #1c4430;
+		color: #86efac;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -388,9 +452,9 @@
 		transition: all 0.15s ease;
 
 		&:hover {
-			background: #1e2638;
+			background: #173827;
 			color: #ffffff;
-			border-color: #3b4d70;
+			border-color: #22c55e;
 		}
 
 		&:active {
@@ -410,8 +474,8 @@
 	}
 
 	.meter-box {
-		background: rgba(18, 24, 36, 0.85);
-		border: 1px solid #212c40;
+		background: rgba(13, 29, 21, 0.85);
+		border: 1px solid #19432d;
 		border-radius: 10px;
 		padding: 5px 14px;
 		display: flex;
@@ -424,15 +488,16 @@
 		}
 
 		&.has-win {
-			border-color: #00ff88;
-			background: rgba(0, 255, 136, 0.08);
+			border-color: #facc15;
+			background: rgba(250, 204, 21, 0.1);
+			box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
 		}
 	}
 
 	.meter-label {
 		font-size: 9.5px;
 		font-weight: 700;
-		color: #64748b;
+		color: #86efac;
 		letter-spacing: 1px;
 	}
 
@@ -448,8 +513,8 @@
 	}
 
 	.win-val {
-		color: #00ff88;
-		text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+		color: #facc15;
+		text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
 	}
 
 	/* Action Block */
@@ -466,8 +531,8 @@
 	.bet-selector {
 		display: flex;
 		align-items: center;
-		background: rgba(18, 24, 36, 0.85);
-		border: 1px solid #212c40;
+		background: rgba(13, 29, 21, 0.85);
+		border: 1px solid #19432d;
 		border-radius: 10px;
 		padding: 2px;
 	}
@@ -478,7 +543,7 @@
 		border-radius: 8px;
 		background: transparent;
 		border: none;
-		color: #94a3b8;
+		color: #86efac;
 		font-size: 18px;
 		font-weight: bold;
 		cursor: pointer;
@@ -488,7 +553,7 @@
 		transition: all 0.15s ease;
 
 		&:hover:not(:disabled) {
-			background: #1c2638;
+			background: #173827;
 			color: #ffffff;
 		}
 
@@ -512,7 +577,7 @@
 	.bet-label {
 		font-size: 9px;
 		font-weight: 700;
-		color: #64748b;
+		color: #86efac;
 		letter-spacing: 1px;
 	}
 
@@ -527,9 +592,9 @@
 		height: 38px;
 		padding: 0 10px;
 		border-radius: 10px;
-		background: #141a26;
-		border: 1px solid #243046;
-		color: #64748b;
+		background: #102118;
+		border: 1px solid #1c4430;
+		color: #86efac;
 		display: flex;
 		align-items: center;
 		gap: 5px;
@@ -537,15 +602,15 @@
 		transition: all 0.15s ease;
 
 		&:hover {
-			border-color: #3b4d70;
-			color: #cbd5e1;
+			border-color: #22c55e;
+			color: #ffffff;
 		}
 
 		&.active {
-			background: rgba(245, 166, 35, 0.16);
-			border-color: #f5a623;
-			color: #f5a623;
-			box-shadow: 0 0 12px rgba(245, 166, 35, 0.3);
+			background: rgba(250, 204, 21, 0.2);
+			border-color: #facc15;
+			color: #facc15;
+			box-shadow: 0 0 14px rgba(250, 204, 21, 0.4);
 		}
 
 		@media (max-width: 600px) {
@@ -565,28 +630,29 @@
 	.auto-count {
 		font-size: 12px;
 		font-weight: 900;
-		color: #00d2ff;
+		color: #38bdf8;
 	}
 
-	/* Proeminent Circular Spin Button */
+	/* Proeminent Circular Spin Button (Golf Championship Green & Gold) */
 	.spin-circle-btn {
 		position: relative;
 		width: 58px;
 		height: 58px;
 		border-radius: 50%;
-		background: radial-gradient(circle at 35% 35%, #00ff88, #00b85c);
-		border: 2px solid #5cffb0;
-		color: #052615;
+		background: radial-gradient(circle at 35% 35%, #22c55e, #15803d);
+		border: 2.5px solid #86efac;
+		color: #052213;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
-		box-shadow: 0 0 20px rgba(0, 255, 136, 0.45), 0 4px 12px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 0 22px rgba(34, 197, 94, 0.5), 0 4px 12px rgba(0, 0, 0, 0.6);
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
 		&:hover:not(:disabled) {
 			transform: scale(1.06);
-			box-shadow: 0 0 26px rgba(0, 255, 136, 0.7), 0 6px 16px rgba(0, 0, 0, 0.6);
+			box-shadow: 0 0 28px rgba(34, 197, 94, 0.8), 0 6px 16px rgba(0, 0, 0, 0.7);
+			border-color: #bbf7d0;
 		}
 
 		&:active:not(:disabled) {
@@ -597,13 +663,13 @@
 			background: radial-gradient(circle at 35% 35%, #ef4444, #b91c1c);
 			border-color: #fca5a5;
 			color: #ffffff;
-			box-shadow: 0 0 20px rgba(239, 68, 68, 0.55);
+			box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
 		}
 
 		&.disabled {
-			background: #1e2636;
-			border-color: #334155;
-			color: #475569;
+			background: #17261e;
+			border-color: #294435;
+			color: #4b6656;
 			box-shadow: none;
 			cursor: not-allowed;
 		}
@@ -615,7 +681,7 @@
 	}
 
 	.spin-icon {
-		stroke: #052615;
+		stroke: #052213;
 	}
 
 	.stop-icon {
@@ -625,6 +691,7 @@
 		border-radius: 4px;
 	}
 
+	/* Top Bar: Stylized FAIRWAY CHAMPIONS Logo */
 	.studio-top-bar {
 		position: fixed;
 		top: 14px;
@@ -638,36 +705,89 @@
 		user-select: none;
 	}
 
-	.top-title {
+	.logo-badge-wrap {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		background: rgba(13, 26, 19, 0.96);
+		border: 1.5px solid #1e4d35;
+		border-radius: 16px;
+		padding: 6px 16px 6px 10px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+	}
+
+	.logo-icon {
+		flex-shrink: 0;
+		filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+	}
+
+	.logo-text-block {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+	}
+
+	.logo-title-row {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		line-height: 1.1;
+	}
+
+	.logo-fairway {
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 15px;
+		font-weight: 900;
+		letter-spacing: 1.2px;
+		color: #facc15;
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+	}
+
+	.logo-champions {
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 15px;
+		font-weight: 900;
+		letter-spacing: 1.2px;
+		color: #4ade80;
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+	}
+
+	.logo-subline {
 		display: flex;
 		align-items: center;
 		gap: 8px;
 	}
 
-	.top-badge {
-		background: #16202c;
-		color: #38bdf8;
-		border: 1px solid #223247;
-		font-size: 9px;
+	.subline-badge {
+		background: #14532d;
+		color: #86efac;
+		font-size: 8.5px;
 		font-weight: 800;
-		letter-spacing: 1.5px;
-		padding: 3px 6px;
-		border-radius: 5px;
+		letter-spacing: 1px;
+		padding: 1px 5px;
+		border-radius: 4px;
 	}
 
-	.top-name {
+	.subline-tag {
 		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 14px;
-		font-weight: 900;
-		color: #ffffff;
+		font-size: 9.5px;
+		font-weight: 800;
+		color: #facc15;
 		letter-spacing: 1.2px;
+	}
+
+	.top-studio {
+		background: rgba(13, 26, 19, 0.85);
+		border: 1px solid #1e4d35;
+		border-radius: 10px;
+		padding: 6px 12px;
 	}
 
 	.studio-tag {
 		font-family: system-ui, -apple-system, sans-serif;
 		font-size: 11px;
 		font-weight: 800;
-		color: #64748b;
+		color: #86efac;
 		letter-spacing: 2px;
 	}
 </style>

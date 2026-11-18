@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { stateBet, stateModal } from 'state-shared';
+	import { getSymbolDataUrl } from '../game/symbolTextureCache';
 
 	type Tab = 'payouts' | 'features' | 'rules';
 	let activeTab = $state<Tab>('payouts');
@@ -10,15 +11,16 @@
 		stateModal.modal = null;
 	};
 
-	// Paytable config aligned with math-sdk/games/0_0_skeleton_5x5/game_config.py
+	// High paying golf symbols
 	const highSymbols = [
 		{
 			id: 'H1',
-			name: 'H1 SYMBOL',
-			type: 'HIGH PAY',
-			color: '#ffe675',
-			bg: '#332206',
-			border: '#f5a623',
+			name: 'DRIVER TITANE',
+			subtitle: 'TÊTE CARBONE & BLEU ÉLECTRIQUE',
+			desc: 'Tête de driver aérodynamique avec face usinée laser et traînée dynamique.',
+			color: '#67e8f9',
+			bg: '#081c38',
+			border: '#00f0ff',
 			tiers: [
 				{ count: '15+', mult: 150.0 },
 				{ count: '11-14', mult: 60.0 },
@@ -29,11 +31,12 @@
 		},
 		{
 			id: 'H2',
-			name: 'H2 SYMBOL',
-			type: 'HIGH PAY',
-			color: '#ff8fa3',
-			bg: '#330912',
-			border: '#eb365b',
+			name: 'VOITURETTE DE GOLF',
+			subtitle: 'CART BLANC & ÉMERAUDE',
+			desc: 'Buggy de fairway tout confort avec sac de clubs fixé à l’arrière.',
+			color: '#a7f3d0',
+			bg: '#07261a',
+			border: '#10b981',
 			tiers: [
 				{ count: '15+', mult: 100.0 },
 				{ count: '11-14', mult: 40.0 },
@@ -44,11 +47,12 @@
 		},
 		{
 			id: 'H3',
-			name: 'H3 SYMBOL',
-			type: 'HIGH PAY',
-			color: '#f99eff',
-			bg: '#2d0830',
-			border: '#dc2cf2',
+			name: 'FERS CHROMÉS',
+			subtitle: 'PAIRE DE FERS CROISÉS',
+			desc: 'Fers forgés en acier chromé brillant avec stries de frappe et étincelle.',
+			color: '#f1f5f9',
+			bg: '#0f172a',
+			border: '#94a3b8',
 			tiers: [
 				{ count: '15+', mult: 60.0 },
 				{ count: '11-14', mult: 25.0 },
@@ -59,11 +63,12 @@
 		},
 		{
 			id: 'H4',
-			name: 'H4 SYMBOL',
-			type: 'HIGH PAY',
-			color: '#ffb073',
-			bg: '#331707',
-			border: '#f56a14',
+			name: 'TEES DE GOLF',
+			subtitle: 'DUO ROSE & TURQUOISE',
+			desc: 'Tees de golf fluo plantés dans une touffe d’herbe verte fraîche.',
+			color: '#fda4af',
+			bg: '#1e0e24',
+			border: '#f43f5e',
 			tiers: [
 				{ count: '15+', mult: 40.0 },
 				{ count: '11-14', mult: 18.0 },
@@ -74,13 +79,15 @@
 		},
 	];
 
+	// Low paying golf symbols (A, K, Q, J, 10 with golf green & ball dimples)
 	const lowSymbols = [
 		{
 			id: 'L1',
-			name: 'L1',
-			color: '#7be5f5',
-			bg: '#0c252e',
-			border: '#1ea7b8',
+			name: 'AS (A)',
+			subtitle: 'GREEN ACE',
+			color: '#fef08a',
+			bg: '#1a2412',
+			border: '#eab308',
 			tiers: [
 				{ count: '15+', mult: 20.0 },
 				{ count: '11-14', mult: 8.0 },
@@ -91,10 +98,11 @@
 		},
 		{
 			id: 'L2',
-			name: 'L2',
-			color: '#8ec0ff',
-			bg: '#0c1b33',
-			border: '#2767c9',
+			name: 'ROI (K)',
+			subtitle: 'FAIRWAY KING',
+			color: '#7dd3fc',
+			bg: '#09232c',
+			border: '#0ea5e9',
 			tiers: [
 				{ count: '15+', mult: 15.0 },
 				{ count: '11-14', mult: 6.0 },
@@ -105,10 +113,11 @@
 		},
 		{
 			id: 'L3',
-			name: 'L3',
-			color: '#bda4ff',
-			bg: '#1a1233',
-			border: '#6e49d6',
+			name: 'REINE (Q)',
+			subtitle: 'PUTTING QUEEN',
+			color: '#5eead4',
+			bg: '#082522',
+			border: '#14b8a6',
 			tiers: [
 				{ count: '15+', mult: 12.0 },
 				{ count: '11-14', mult: 5.0 },
@@ -119,10 +128,11 @@
 		},
 		{
 			id: 'L4',
-			name: 'L4',
-			color: '#7ee0b8',
-			bg: '#0c261e',
-			border: '#228f64',
+			name: 'VALET (J)',
+			subtitle: 'CADDIE JACK',
+			color: '#6ee7b7',
+			bg: '#0b241b',
+			border: '#10b981',
 			tiers: [
 				{ count: '15+', mult: 10.0 },
 				{ count: '11-14', mult: 4.0 },
@@ -133,10 +143,11 @@
 		},
 		{
 			id: 'L5',
-			name: 'L5',
-			color: '#c7d6e8',
-			bg: '#182029',
-			border: '#54667d',
+			name: 'DIX (10)',
+			subtitle: 'SCORE TEN',
+			color: '#86efac',
+			bg: '#0c1e15',
+			border: '#22c55e',
 			tiers: [
 				{ count: '15+', mult: 8.0 },
 				{ count: '11-14', mult: 3.0 },
@@ -159,7 +170,7 @@
 		<div class="modal-title-row">
 			<div class="modal-title-wrap">
 				<span class="badge-studio">STAKE ENGINE</span>
-				<h2 class="modal-title">SKELETON 5X5 — RÈGLES & PAIEMENTS</h2>
+				<h2 class="modal-title">FAIRWAY CHAMPIONS — RÈGLES & PAIEMENTS</h2>
 			</div>
 			<button class="modal-close-btn" onclick={closeModal} title="Fermer la fenêtre">✕</button>
 		</div>
@@ -170,10 +181,10 @@
 				<span class="tab-badge">1</span> Paiements
 			</button>
 			<button class="tab-btn" class:active={activeTab === 'features'} onclick={() => (activeTab = 'features')}>
-				<span class="tab-badge">2</span> Bonus & Multiplicateurs
+				<span class="tab-badge">2</span> Bonus & Symboles
 			</button>
 			<button class="tab-btn" class:active={activeTab === 'rules'} onclick={() => (activeTab = 'rules')}>
-				<span class="tab-badge">3</span> Règles & RTP
+				<span class="tab-badge">3</span> Spécifications & Règles
 			</button>
 		</div>
 	</div>
@@ -183,22 +194,26 @@
 		{#if activeTab === 'payouts'}
 			<!-- Current Bet Scaler Banner -->
 			<div class="bet-scaler-banner">
-				<span class="bet-scaler-icon">⚡</span>
+				<span class="bet-scaler-icon">⛳</span>
 				<span>Gains calculés en direct sur votre mise actuelle : <strong>${baseBet.toFixed(2)} USD</strong></span>
 			</div>
 
 			<!-- High Paying Symbols -->
 			<section class="section-block">
-				<h3 class="section-title">SYMBOLES FORTS (HIGH PAYS)</h3>
+				<h3 class="section-title">SYMBOLES FORTS (HIGH PAYS GOLF)</h3>
 				<div class="symbols-grid high-grid">
 					{#each highSymbols as sym}
 						<div class="symbol-card">
-							<div
-								class="symbol-tile"
-								style="background-color: {sym.bg}; border-color: {sym.border}; color: {sym.color};"
-							>
-								<span class="sym-name">{sym.id}</span>
-								<span class="sym-type">{sym.type}</span>
+							<div class="symbol-thumb-wrap">
+								<img
+									src={getSymbolDataUrl({ name: sym.id })}
+									alt={sym.name}
+									class="symbol-img"
+								/>
+							</div>
+							<div class="symbol-info">
+								<span class="sym-name" style="color: {sym.color};">{sym.name}</span>
+								<span class="sym-sub">{sym.subtitle}</span>
 							</div>
 							<div class="payout-list">
 								{#each sym.tiers as tier}
@@ -215,16 +230,20 @@
 
 			<!-- Low Paying Symbols -->
 			<section class="section-block">
-				<h3 class="section-title">SYMBOLES BASIQUES (LOW PAYS)</h3>
+				<h3 class="section-title">SYMBOLES BASIQUES (GREEN & FAIRWAY)</h3>
 				<div class="symbols-grid low-grid">
 					{#each lowSymbols as sym}
 						<div class="symbol-card">
-							<div
-								class="symbol-tile low-tile"
-								style="background-color: {sym.bg}; border-color: {sym.border}; color: {sym.color};"
-							>
-								<span class="sym-name">{sym.id}</span>
-								<span class="sym-type">LOW</span>
+							<div class="symbol-thumb-wrap low-thumb">
+								<img
+									src={getSymbolDataUrl({ name: sym.id })}
+									alt={sym.name}
+									class="symbol-img"
+								/>
+							</div>
+							<div class="symbol-info">
+								<span class="sym-name" style="color: {sym.color};">{sym.name}</span>
+								<span class="sym-sub">{sym.subtitle}</span>
 							</div>
 							<div class="payout-list">
 								{#each sym.tiers as tier}
@@ -242,58 +261,60 @@
 		{:else if activeTab === 'features'}
 			<!-- Special Symbols -->
 			<section class="section-block">
-				<h3 class="section-title">SYMBOLES SPÉCIAUX</h3>
+				<h3 class="section-title">SYMBOLES SPÉCIAUX DU TOURNOI</h3>
 				<div class="specials-grid">
-					<!-- Wild -->
+					<!-- Wild: Championship Trophy -->
 					<div class="special-card">
-						<div class="symbol-tile special-tile" style="background-color: #2e2404; border-color: #ffd700; color: #ffe57f;">
-							<span class="sym-name">W</span>
-							<span class="sym-type">WILD</span>
+						<div class="symbol-thumb-wrap special-thumb">
+							<img src={getSymbolDataUrl({ name: 'W' })} alt="Trophée Wild" class="symbol-img" />
 						</div>
 						<div class="special-desc">
-							<h4>SYMBOLE WILD</h4>
-							<p>Remplace tous les symboles payants (H1–H4, L1–L5) pour compléter ou agrandir un cluster gagnant. N'apparaît pas à la place des Scatters.</p>
+							<h4>TROPHÉE WILD (W) — COUPE EN OR MASSIF</h4>
+							<p>La prestigieuse Coupe de Championnat en or 24 carats fait office de symbole Wild. Elle se substitue à tous les symboles payants réguliers (Driver, Voiturette, Fers, Tees, A, K, Q, J, 10) pour compléter ou étendre les clusters gagnants sur la grille 5x5.</p>
 						</div>
 					</div>
 
-					<!-- Scatter -->
+					<!-- Scatter: Green & Flag #18 -->
 					<div class="special-card">
-						<div class="symbol-tile special-tile" style="background-color: #2a0730; border-color: #ff007f; color: #ff409f;">
-							<span class="sym-name">S</span>
-							<span class="sym-type">SCATTER</span>
+						<div class="symbol-thumb-wrap special-thumb">
+							<img src={getSymbolDataUrl({ name: 'S' })} alt="Drapeau 18 Scatter" class="symbol-img" />
 						</div>
 						<div class="special-desc">
-							<h4>SYMBOLE SCATTER & TOURS GRATUITS</h4>
-							<p>Obtenez 3 symboles Scatters ou plus n'importe où sur la grille pour déclencher la séquence de Tours Gratuits :</p>
+							<h4>DRAPEAU N°18 SCATTER (S) — TOURS GRATUITS</h4>
+							<p>Le 18ème trou du championnat ! Obtenez 3 symboles Scatters ou plus n'importe où sur la grille pour déclencher la séquence de Tours Gratuits :</p>
 							<ul>
 								<li><strong>3 Scatters :</strong> 10 Tours Gratuits</li>
 								<li><strong>4 Scatters :</strong> 12 Tours Gratuits</li>
 								<li><strong>5+ Scatters :</strong> 15 Tours Gratuits</li>
 							</ul>
-							<p><strong>Retrigger :</strong> 3 Scatters ou plus pendant le bonus accordent <strong>+5 Tours Gratuits supplémentaires</strong>.</p>
+							<p><strong>Prolongation (Retrigger) :</strong> Obtenir 3 Scatters ou plus pendant le jeu bonus accorde <strong>+5 Tours Gratuits supplémentaires</strong>.</p>
 						</div>
 					</div>
 
-					<!-- Multiplier Bomb -->
+					<!-- Multiplier: Golden Energy Golf Ball -->
 					<div class="special-card">
-						<div class="symbol-tile special-tile" style="background-color: #052a16; border-color: #00ff88; color: #69f0ae;">
-							<span class="sym-name">x50</span>
-							<span class="sym-type">BOMB</span>
+						<div class="symbol-thumb-wrap special-thumb">
+							<img src={getSymbolDataUrl({ name: 'M', multiplier: 50 })} alt="Balle Multiplicateur" class="symbol-img" />
 						</div>
 						<div class="special-desc">
-							<h4>SYMBOLES MULTIPLICATEURS (M)</h4>
-							<p>Peuvent atterrir avec des valeurs explosives de <strong>x2 à x1000</strong> (x2, x3, x4, x5, x10, x15, x25, x50, x100, x250, x500, x1000).</p>
-							<p><strong>En Jeu de Base :</strong> La somme de tous les multiplicateurs présents à l'écran multiplie le gain cumulé de toutes les cascades du spin.</p>
-							<p><strong>En Tours Gratuits :</strong> Les multiplicateurs sont ajoutés au <strong>Multiplicateur Global Progressif</strong> qui persiste d'un tour à l'autre et s'applique à tous les gains suivants contenant un multiplicateur !</p>
+							<h4>BALLE MULTIPLICATEUR (M) — VALEURS DE x2 À x1000</h4>
+							<p>Une balle de golf dorée chargée d'énergie qui atterrit avec un multiplicateur spectaculaire :</p>
+							<ul>
+								<li><strong>Aura Émeraude :</strong> Multiplicateurs x2, x3, x4, x5</li>
+								<li><strong>Aura Or :</strong> Multiplicateurs x10, x15, x25</li>
+								<li><strong>Aura Flamme / Rubis :</strong> Multiplicateurs x50, x100, x250, x500, x1000</li>
+							</ul>
+							<p><strong>En Jeu de Base :</strong> Tous les multiplicateurs visibles s'additionnent et multiplient l'ensemble des gains du spin.</p>
+							<p><strong>En Tours Gratuits :</strong> Les multiplicateurs alimentent le <strong>Multiplicateur Global Progressif</strong> qui persiste entre les spins et ne se réinitialise jamais !</p>
 						</div>
 					</div>
 				</div>
 			</section>
 
 		{:else if activeTab === 'rules'}
-			<!-- Technical Rules & Limits -->
+			<!-- Technical Rules & Specifications -->
 			<section class="section-block">
-				<h3 class="section-title">SPÉCIFICATIONS DU JEU & CERTIFICATION</h3>
+				<h3 class="section-title">CARACTÉRISTIQUES DU JEU & MOTEUR MATHÉMATIQUE</h3>
 				<div class="specs-grid">
 					<div class="spec-box">
 						<span class="label">GRILLE</span>
@@ -314,10 +335,10 @@
 				</div>
 
 				<div class="rules-text">
-					<p><strong>Mécanique de Cascade (Tumble) :</strong> 5 symboles identiques ou plus connectés horizontalement ou verticalement forment un cluster gagnant. Les symboles gagnants explosent et disparaissent. Les symboles restants tombent par gravité vers le bas et de nouveaux symboles tombent du haut pour combler les espaces vides. Les cascades se poursuivent tant que de nouveaux gains apparaissent.</p>
-					<p><strong>Option Bonus Booster :</strong> Coûte 3x la mise de base. Triple vos chances d'obtenir des Scatters et d'entrer en Tours Gratuits de manière organique.</p>
-					<p><strong>Option Bonus Buy :</strong> Coûte 100x la mise de base. Déclenche immédiatement le jeu bonus de Tours Gratuits avec 3 Scatters ou plus garantis dès le premier tour.</p>
-					<p><strong>Plafond de Gain x100 000 (Win Cap) :</strong> Si le gain cumulé total d'un tour atteint ou dépasse 100 000x la mise de base, le spin s'arrête immédiatement, le bandeau MAX WIN s'affiche et le paiement de 100 000x est crédité au solde.</p>
+					<p><strong>Mécanique de Tumble (Cascades) :</strong> Tout groupe de 5 symboles identiques ou plus connectés horizontalement ou verticalement forme un cluster gagnant. Les symboles payants explosent et disparaissent. Les symboles au-dessus chutent par gravité et de nouveaux symboles tombent du ciel pour combler les vides.</p>
+					<p><strong>Option Caddie Booster (3x Mise) :</strong> Triple vos chances naturelles d'obtenir les Scatters Drapeau 18 et d'accéder au mode Tours Gratuits.</p>
+					<p><strong>Option Championship Bonus Buy (100x Mise) :</strong> Déclenche instantanément la séquence de Tours Gratuits avec un minimum de 3 Scatters garantis.</p>
+					<p><strong>Plafond Max Win x100 000 :</strong> Si le cumul des gains d'un spin atteint ou dépasse 100 000 fois la mise, la partie s'arrête immédiatement et le gain maximal de x100 000 est crédité.</p>
 				</div>
 			</section>
 		{/if}
@@ -329,13 +350,13 @@
 		font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 		color: #e2e8f0;
 		width: 92vw;
-		max-width: 820px;
+		max-width: 840px;
 		height: 82vh;
 		max-height: 82vh;
-		background: #0b0f17;
-		border: 1.5px solid #1e2638;
+		background: #09130e;
+		border: 1.5px solid #1c4430;
 		border-radius: 20px;
-		box-shadow: 0 24px 70px rgba(0, 0, 0, 0.9), 0 0 35px rgba(30, 167, 184, 0.12);
+		box-shadow: 0 24px 70px rgba(0, 0, 0, 0.95), 0 0 35px rgba(34, 197, 94, 0.15);
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
@@ -345,8 +366,8 @@
 
 	.modal-header {
 		padding: 20px 24px 0 24px;
-		background: #0e1420;
-		border-bottom: 1px solid #1c2538;
+		background: #0d1e16;
+		border-bottom: 1.5px solid #1a3d2b;
 		flex-shrink: 0;
 	}
 
@@ -364,9 +385,9 @@
 	}
 
 	.badge-studio {
-		background: #1e293b;
-		color: #38bdf8;
-		border: 1px solid #38bdf8;
+		background: #14532d;
+		color: #86efac;
+		border: 1px solid #22c55e;
 		font-size: 10px;
 		font-weight: 800;
 		letter-spacing: 1.5px;
@@ -379,10 +400,10 @@
 		font-size: 1.2rem;
 		font-weight: 900;
 		letter-spacing: 1px;
-		color: #ffffff;
+		color: #facc15;
 
 		@media (max-width: 600px) {
-			font-size: 1rem;
+			font-size: 0.95rem;
 		}
 	}
 
@@ -390,9 +411,9 @@
 		width: 36px;
 		height: 36px;
 		border-radius: 10px;
-		background: #161e2e;
-		border: 1px solid #2d3b55;
-		color: #94a3b8;
+		background: #132b1f;
+		border: 1px solid #1e4d35;
+		color: #86efac;
 		font-size: 18px;
 		font-weight: bold;
 		cursor: pointer;
@@ -421,7 +442,7 @@
 		background: transparent;
 		border: 1px solid transparent;
 		border-bottom: none;
-		color: #64748b;
+		color: #6ee7b7;
 		font-size: 13px;
 		font-weight: 700;
 		cursor: pointer;
@@ -432,15 +453,15 @@
 		white-space: nowrap;
 
 		&:hover:not(.active) {
-			color: #cbd5e1;
-			background: #131a29;
+			color: #ffffff;
+			background: #11281d;
 		}
 
 		&.active {
-			background: #0b0f17;
-			color: #00ff88;
-			border-color: #1c2538;
-			border-bottom: 1px solid #0b0f17;
+			background: #09130e;
+			color: #facc15;
+			border-color: #1a3d2b;
+			border-bottom: 1px solid #09130e;
 			margin-bottom: -1px;
 		}
 	}
@@ -449,7 +470,7 @@
 		width: 18px;
 		height: 18px;
 		border-radius: 50%;
-		background: #1c2538;
+		background: #143322;
 		font-size: 10.5px;
 		font-weight: 800;
 		display: flex;
@@ -459,8 +480,8 @@
 	}
 
 	.tab-btn.active .tab-badge {
-		background: #00ff88;
-		color: #052615;
+		background: #facc15;
+		color: #052213;
 	}
 
 	.modal-body {
@@ -471,33 +492,33 @@
 		flex-direction: column;
 		gap: 24px;
 		scrollbar-width: thin;
-		scrollbar-color: #243046 #0b0f17;
+		scrollbar-color: #1a4d33 #09130e;
 
 		&::-webkit-scrollbar {
 			width: 8px;
 		}
 		&::-webkit-scrollbar-track {
-			background: #0b0f17;
+			background: #09130e;
 		}
 		&::-webkit-scrollbar-thumb {
-			background: #243046;
+			background: #1a4d33;
 			border-radius: 4px;
 		}
 	}
 
 	.bet-scaler-banner {
-		background: rgba(0, 255, 136, 0.08);
-		border: 1px solid rgba(0, 255, 136, 0.3);
+		background: rgba(34, 197, 94, 0.12);
+		border: 1.5px solid rgba(34, 197, 94, 0.4);
 		border-radius: 10px;
 		padding: 10px 16px;
 		font-size: 13px;
-		color: #a7f3d0;
+		color: #86efac;
 		display: flex;
 		align-items: center;
 		gap: 10px;
 
 		strong {
-			color: #ffffff;
+			color: #facc15;
 		}
 	}
 
@@ -512,7 +533,7 @@
 		font-size: 11.5px;
 		font-weight: 800;
 		letter-spacing: 1.5px;
-		color: #64748b;
+		color: #86efac;
 		text-transform: uppercase;
 	}
 
@@ -522,67 +543,77 @@
 	}
 
 	.high-grid {
-		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 	}
 
 	.low-grid {
-		grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 	}
 
 	.symbol-card {
-		background: #0e131d;
-		border: 1px solid #1a2334;
-		border-radius: 12px;
+		background: #0c1a13;
+		border: 1.5px solid #193d2b;
+		border-radius: 14px;
 		padding: 12px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 10px;
+		gap: 8px;
 		transition: all 0.15s ease;
 
 		&:hover {
-			border-color: #38bdf8;
-			background: #111824;
+			border-color: #22c55e;
+			background: #0f241a;
+			transform: translateY(-2px);
 		}
 	}
 
-	.symbol-tile {
-		width: 58px;
-		height: 58px;
+	.symbol-thumb-wrap {
+		width: 64px;
+		height: 64px;
 		border-radius: 12px;
-		border: 2px solid;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+
+		&.low-thumb {
+			width: 54px;
+			height: 54px;
+		}
+
+		&.special-thumb {
+			width: 72px;
+			height: 72px;
+			flex-shrink: 0;
+		}
+	}
+
+	.symbol-img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+
+	.symbol-info {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
+		text-align: center;
+		gap: 2px;
+	}
+
+	.sym-name {
+		font-size: 12.5px;
 		font-weight: 900;
+		letter-spacing: 0.5px;
+	}
 
-		.sym-name {
-			font-size: 1.15rem;
-			line-height: 1;
-		}
-
-		.sym-type {
-			font-size: 0.55rem;
-			letter-spacing: 0.5px;
-			opacity: 0.85;
-		}
-
-		&.low-tile {
-			width: 48px;
-			height: 48px;
-			border-radius: 10px;
-
-			.sym-name {
-				font-size: 1rem;
-			}
-		}
-
-		&.special-tile {
-			width: 62px;
-			height: 62px;
-			flex-shrink: 0;
-		}
+	.sym-sub {
+		font-size: 9px;
+		font-weight: 700;
+		color: #6ee7b7;
+		letter-spacing: 0.5px;
 	}
 
 	.payout-list {
@@ -590,6 +621,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
+		margin-top: 2px;
 	}
 
 	.tier-row {
@@ -597,19 +629,19 @@
 		justify-content: space-between;
 		font-size: 12px;
 		padding: 2px 4px;
-		border-bottom: 1px solid #161e2c;
+		border-bottom: 1px solid #132e20;
 
 		&:last-child {
 			border-bottom: none;
 		}
 
 		.count {
-			color: #94a3b8;
+			color: #86efac;
 			font-weight: 600;
 		}
 
 		.cash {
-			color: #f8fafc;
+			color: #ffffff;
 			font-weight: 800;
 			font-variant-numeric: tabular-nums;
 		}
@@ -622,9 +654,9 @@
 	}
 
 	.special-card {
-		background: #0e131d;
-		border: 1px solid #1a2334;
-		border-radius: 12px;
+		background: #0c1a13;
+		border: 1.5px solid #193d2b;
+		border-radius: 14px;
 		padding: 16px;
 		display: flex;
 		gap: 18px;
@@ -634,15 +666,15 @@
 			h4 {
 				margin: 0 0 6px 0;
 				font-size: 14px;
-				font-weight: 800;
-				color: #ffffff;
+				font-weight: 900;
+				color: #facc15;
 			}
 
 			p {
 				margin: 0 0 6px 0;
 				font-size: 12.5px;
-				line-height: 1.45;
-				color: #94a3b8;
+				line-height: 1.5;
+				color: #cbd5e1;
 
 				&:last-child {
 					margin-bottom: 0;
@@ -653,7 +685,7 @@
 				margin: 4px 0 6px 18px;
 				padding: 0;
 				font-size: 12.5px;
-				color: #cbd5e1;
+				color: #a7f3d0;
 
 				li {
 					margin-bottom: 2px;
@@ -669,8 +701,8 @@
 	}
 
 	.spec-box {
-		background: #0e131d;
-		border: 1px solid #1a2334;
+		background: #0c1a13;
+		border: 1.5px solid #193d2b;
 		border-radius: 10px;
 		padding: 12px;
 		display: flex;
@@ -682,7 +714,7 @@
 		.label {
 			font-size: 9.5px;
 			font-weight: 700;
-			color: #64748b;
+			color: #86efac;
 			letter-spacing: 1px;
 		}
 
@@ -692,10 +724,10 @@
 			color: #ffffff;
 
 			&.highlight-green {
-				color: #00ff88;
+				color: #22c55e;
 			}
 			&.highlight-gold {
-				color: #ffd700;
+				color: #facc15;
 			}
 			&.highlight-orange {
 				color: #f97316;
@@ -704,13 +736,13 @@
 	}
 
 	.rules-text {
-		background: #0e131d;
-		border: 1px solid #1a2334;
+		background: #0c1a13;
+		border: 1.5px solid #193d2b;
 		border-radius: 10px;
 		padding: 16px 20px;
 		font-size: 12.5px;
 		line-height: 1.6;
-		color: #94a3b8;
+		color: #cbd5e1;
 
 		p {
 			margin: 0 0 10px 0;
@@ -721,7 +753,7 @@
 		}
 
 		strong {
-			color: #ffffff;
+			color: #facc15;
 		}
 	}
 </style>

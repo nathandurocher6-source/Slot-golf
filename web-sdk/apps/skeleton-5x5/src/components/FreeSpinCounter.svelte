@@ -55,14 +55,14 @@
 <MainContainer>
 	<FadeContainer {show} {...position}>
 		<Container>
-			<!-- Card Outer Frame -->
+			<!-- Card Outer Frame (Obsidian Golf Green & Gold) -->
 			<Rectangle
 				width={CARD_WIDTH}
 				height={CARD_HEIGHT}
 				borderRadius={14}
-				backgroundColor={0x200a29}
-				backgroundAlpha={0.92}
-				borderColor={0xff007f}
+				backgroundColor={0x081c13}
+				backgroundAlpha={0.95}
+				borderColor={0xfacc15}
 				borderWidth={2}
 				anchor={0.5}
 			/>
@@ -70,13 +70,13 @@
 			<!-- Header Label -->
 			<Text
 				y={-14}
-				text="FREE SPINS"
+				text="TOURS GRATUITS"
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
 					fontSize: 10,
-					fontWeight: '700',
-					fill: 0xff66b2,
+					fontWeight: '800',
+					fill: 0x86efac,
 					letterSpacing: 1.2,
 				}}
 			/>
@@ -89,8 +89,8 @@
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
 					fontSize: 18,
-					fontWeight: '800',
-					fill: 0xffffff,
+					fontWeight: '900',
+					fill: 0xfacc15,
 				}}
 			/>
 		</Container>

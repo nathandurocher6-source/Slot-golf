@@ -135,7 +135,7 @@
 			cursor="pointer"
 			onpointerup={continueAction}
 		>
-			<!-- Deep Drop Shadow Plate (High contrast over bright reels) -->
+			<!-- Deep Drop Shadow Plate -->
 			<Rectangle
 				y={7}
 				width={CARD_WIDTH + 14}
@@ -146,26 +146,26 @@
 				anchor={0.5}
 			/>
 
-			<!-- Neon Glow Halo Behind Modal -->
+			<!-- Golden Championship Glow Halo -->
 			<Rectangle
 				width={CARD_WIDTH + 16}
 				height={CARD_HEIGHT + 16}
 				borderRadius={28}
-				backgroundColor={0xff007f}
-				backgroundAlpha={0.3}
-				borderColor={0xff007f}
-				borderWidth={2}
+				backgroundColor={0xfacc15}
+				backgroundAlpha={0.35}
+				borderColor={0xffe066}
+				borderWidth={2.5}
 				anchor={0.5}
 			/>
 
-			<!-- Modal Card Base -->
+			<!-- Modal Card Base (Deep Obsidian Green) -->
 			<Rectangle
 				width={CARD_WIDTH}
 				height={CARD_HEIGHT}
 				borderRadius={22}
-				backgroundColor={0x12051a}
+				backgroundColor={0x091c14}
 				backgroundAlpha={0.98}
-				borderColor={0xff007f}
+				borderColor={0xfacc15}
 				borderWidth={3}
 				anchor={0.5}
 			/>
@@ -176,21 +176,21 @@
 				width={260}
 				height={32}
 				borderRadius={8}
-				backgroundColor={0x330940}
-				borderColor={0xff007f}
+				backgroundColor={0x123d28}
+				borderColor={0x22c55e}
 				borderWidth={1.5}
 				anchor={0.5}
 			/>
 
 			<Text
 				y={-CARD_HEIGHT * 0.5 + 26}
-				text="BONUS FEATURE"
+				text="TEE TIME CHAMPIONSHIP"
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
-					fontSize: 14,
+					fontSize: 13,
 					fontWeight: '900',
-					fill: 0xff66b2,
+					fill: 0x86efac,
 					letterSpacing: 2,
 				}}
 			/>
@@ -198,26 +198,26 @@
 			<!-- Total Spins Awarded Text -->
 			<Text
 				y={-6}
-				text={`${totalFreeSpins} FREE SPINS`}
+				text={`${totalFreeSpins} TOURS GRATUITS`}
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
-					fontSize: 38,
+					fontSize: 34,
 					fontWeight: '900',
-					fill: 0xffffff,
+					fill: 0xfacc15,
 				}}
 			/>
 
 			<!-- Subtitle -->
 			<Text
 				y={40}
-				text="PROGRESSIVE GLOBAL MULTIPLIER ACTIVE"
+				text="MULTIPLICATEUR GLOBAL PROGRESSIF ACTIF"
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
 					fontSize: 12,
-					fontWeight: '700',
-					fill: 0x00ff66,
+					fontWeight: '800',
+					fill: 0x4ade80,
 					letterSpacing: 1.2,
 				}}
 			/>
@@ -225,13 +225,13 @@
 			<!-- Continue prompt -->
 			<Text
 				y={CARD_HEIGHT * 0.5 - 20}
-				text="CLICK OR PRESS SPACE TO START"
+				text="CLIQUEZ OU APPUYEZ SUR ESPACE"
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
 					fontSize: 11,
 					fontWeight: '700',
-					fill: 0x94a3b8,
+					fill: 0x86efac,
 					letterSpacing: 1.5,
 				}}
 			/>

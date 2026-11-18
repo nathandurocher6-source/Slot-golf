@@ -29,6 +29,7 @@ yarn-error.log*
 build
 out/
 dist
+!packages/pixi-svelte/dist
 
 #storybook
 build-storybook.log

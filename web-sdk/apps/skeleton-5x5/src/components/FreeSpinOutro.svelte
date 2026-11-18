@@ -138,7 +138,7 @@
 			cursor="pointer"
 			onpointerup={continueAction}
 		>
-			<!-- Deep Drop Shadow Plate (High contrast over bright reels) -->
+			<!-- Deep Drop Shadow Plate -->
 			<Rectangle
 				y={7}
 				width={CARD_WIDTH + 14}
@@ -154,21 +154,21 @@
 				width={CARD_WIDTH + 16}
 				height={CARD_HEIGHT + 16}
 				borderRadius={28}
-				backgroundColor={0xffa500}
-				backgroundAlpha={0.3}
-				borderColor={0xffd700}
-				borderWidth={2}
+				backgroundColor={0xfacc15}
+				backgroundAlpha={0.35}
+				borderColor={0xffe066}
+				borderWidth={2.5}
 				anchor={0.5}
 			/>
 
-			<!-- Modal Card Base -->
+			<!-- Modal Card Base (Obsidian Green & Gold) -->
 			<Rectangle
 				width={CARD_WIDTH}
 				height={CARD_HEIGHT}
 				borderRadius={22}
-				backgroundColor={0x140e04}
+				backgroundColor={0x091c14}
 				backgroundAlpha={0.98}
-				borderColor={0xffd700}
+				borderColor={0xfacc15}
 				borderWidth={3}
 				anchor={0.5}
 			/>
@@ -179,21 +179,21 @@
 				width={260}
 				height={32}
 				borderRadius={8}
-				backgroundColor={0x332205}
-				borderColor={0xffd700}
+				backgroundColor={0x123d28}
+				borderColor={0x22c55e}
 				borderWidth={1.5}
 				anchor={0.5}
 			/>
 
 			<Text
 				y={-CARD_HEIGHT * 0.5 + 26}
-				text="BONUS COMPLETED"
+				text="CHAMPIONSHIP TERMINE"
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
-					fontSize: 14,
+					fontSize: 13,
 					fontWeight: '900',
-					fill: 0xffd700,
+					fill: 0xfacc15,
 					letterSpacing: 2,
 				}}
 			/>
@@ -214,13 +214,13 @@
 			<!-- Subtitle -->
 			<Text
 				y={40}
-				text="TOTAL FREE SPINS PAYOUT"
+				text="GAIN TOTAL DES TOURS GRATUITS"
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
 					fontSize: 12,
 					fontWeight: '700',
-					fill: 0xffd066,
+					fill: 0x86efac,
 					letterSpacing: 1.2,
 				}}
 			/>
@@ -228,13 +228,13 @@
 			<!-- Continue prompt -->
 			<Text
 				y={CARD_HEIGHT * 0.5 - 20}
-				text="CLICK OR PRESS SPACE TO COLLECT"
+				text="CLIQUEZ OU APPUYEZ SUR ESPACE POUR ENCAISSER"
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',
 					fontSize: 11,
 					fontWeight: '700',
-					fill: 0x94a3b8,
+					fill: 0xfacc15,
 					letterSpacing: 1.5,
 				}}
 			/>

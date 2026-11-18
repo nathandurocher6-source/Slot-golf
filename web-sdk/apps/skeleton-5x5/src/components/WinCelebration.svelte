@@ -282,7 +282,7 @@
 			width={CARD_WIDTH}
 			height={CARD_HEIGHT}
 			borderRadius={24}
-			backgroundColor={0x080c14}
+			backgroundColor={0x07150e}
 			backgroundAlpha={0.98}
 			borderColor={theme.border}
 			borderWidth={3}
@@ -303,73 +303,87 @@
 		/>
 
 		<!-- 6. Sparkling Star Particles orbiting the badge -->
-		<Container>
+		<Container alpha={sparklePulse}>
 			<!-- Top-Left Sparkle -->
-			<Rectangle
+			<Container
 				x={-CARD_WIDTH * 0.46}
 				y={-CARD_HEIGHT * 0.46}
-				width={12}
-				height={12}
 				rotation={Math.PI / 4 + rayRotation}
-				backgroundColor={0xffffff}
-				backgroundAlpha={sparklePulse}
-				anchor={0.5}
-			/>
+			>
+				<Rectangle
+					width={12}
+					height={12}
+					backgroundColor={0xffffff}
+					anchor={0.5}
+				/>
+			</Container>
 			<!-- Top-Right Sparkle -->
-			<Rectangle
+			<Container
 				x={CARD_WIDTH * 0.46}
 				y={-CARD_HEIGHT * 0.46}
-				width={10}
-				height={10}
 				rotation={Math.PI / 4 - rayRotation}
-				backgroundColor={theme.border}
-				backgroundAlpha={sparklePulse}
-				anchor={0.5}
-			/>
+			>
+				<Rectangle
+					width={10}
+					height={10}
+					backgroundColor={theme.border}
+					anchor={0.5}
+				/>
+			</Container>
 			<!-- Bottom-Left Sparkle -->
-			<Rectangle
+			<Container
 				x={-CARD_WIDTH * 0.46}
 				y={CARD_HEIGHT * 0.46}
-				width={10}
-				height={10}
 				rotation={Math.PI / 4 - rayRotation}
-				backgroundColor={theme.border}
-				backgroundAlpha={sparklePulse}
-				anchor={0.5}
-			/>
+			>
+				<Rectangle
+					width={10}
+					height={10}
+					backgroundColor={theme.border}
+					anchor={0.5}
+				/>
+			</Container>
 			<!-- Bottom-Right Sparkle -->
-			<Rectangle
+			<Container
 				x={CARD_WIDTH * 0.46}
 				y={CARD_HEIGHT * 0.46}
-				width={12}
-				height={12}
 				rotation={Math.PI / 4 + rayRotation}
-				backgroundColor={0xffffff}
-				backgroundAlpha={sparklePulse}
-				anchor={0.5}
-			/>
+			>
+				<Rectangle
+					width={12}
+					height={12}
+					backgroundColor={0xffffff}
+					anchor={0.5}
+				/>
+			</Container>
 			<!-- Mid-Left Sparkle -->
-			<Rectangle
+			<Container
 				x={-CARD_WIDTH * 0.52}
 				y={0}
-				width={8}
-				height={8}
 				rotation={Math.PI / 4 + rayRotation}
-				backgroundColor={0xffffff}
-				backgroundAlpha={sparklePulse * 0.8}
-				anchor={0.5}
-			/>
+				alpha={0.8}
+			>
+				<Rectangle
+					width={8}
+					height={8}
+					backgroundColor={0xffffff}
+					anchor={0.5}
+				/>
+			</Container>
 			<!-- Mid-Right Sparkle -->
-			<Rectangle
+			<Container
 				x={CARD_WIDTH * 0.52}
 				y={0}
-				width={8}
-				height={8}
 				rotation={Math.PI / 4 - rayRotation}
-				backgroundColor={theme.border}
-				backgroundAlpha={sparklePulse * 0.8}
-				anchor={0.5}
-			/>
+				alpha={0.8}
+			>
+				<Rectangle
+					width={8}
+					height={8}
+					backgroundColor={theme.border}
+					anchor={0.5}
+				/>
+			</Container>
 		</Container>
 
 		<!-- 7. Top Header Badge -->

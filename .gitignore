@@ -12,6 +12,7 @@ pnpm-lock.yaml.bak
 # SvelteKit & Vite & Turbo
 .svelte-kit/
 dist/
+!web-sdk/packages/pixi-svelte/dist/
 build/
 .turbo/
 storybook-static/
@@ -68,3 +69,6 @@ math-sdk/uploads/
 .env
 .env.local
 .env.*.local
+
+# Preserve pixi-svelte distribution bundle
+!web-sdk/packages/pixi-svelte/dist/**

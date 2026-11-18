@@ -22,47 +22,47 @@
 			width={PANEL_SIZES.width + 12}
 			height={PANEL_SIZES.height + 12}
 			borderRadius={16}
-			backgroundColor={0x00ff88}
+			backgroundColor={0xfacc15}
 			backgroundAlpha={0.35}
-			borderColor={0x00ff88}
+			borderColor={0xfacc15}
 			borderWidth={2}
 			anchor={0.5}
 		/>
 	{/if}
 
-	<!-- Outer Frame -->
+	<!-- Outer Frame (Golf Green Obsidian & Gold) -->
 	<Rectangle
 		width={PANEL_SIZES.width}
 		height={PANEL_SIZES.height}
 		borderRadius={12}
-		backgroundColor={0x0c131c}
+		backgroundColor={0x081911}
 		backgroundAlpha={0.96}
-		borderColor={props.isEquation ? 0x00ff88 : 0x2b3d56}
-		borderWidth={props.isEquation ? 2 : 1.5}
+		borderColor={props.isEquation ? 0xfacc15 : 0x1f4733}
+		borderWidth={props.isEquation ? 2.5 : 1.5}
 		anchor={0.5}
 	/>
 
 	<!-- Header Badge -->
 	<Rectangle
 		y={-PANEL_SIZES.height * 0.5}
-		width={props.isEquation ? 140 : 110}
+		width={props.isEquation ? 150 : 115}
 		height={18}
 		borderRadius={6}
-		backgroundColor={props.isEquation ? 0x072818 : 0x162436}
-		borderColor={props.isEquation ? 0x00ff88 : 0x2b3d56}
+		backgroundColor={props.isEquation ? 0x241d04 : 0x0f2d1e}
+		borderColor={props.isEquation ? 0xfacc15 : 0x22c55e}
 		borderWidth={1}
 		anchor={0.5}
 	/>
 
 	<Text
 		y={-PANEL_SIZES.height * 0.5}
-		text={props.isEquation ? 'WIN MULTIPLIED' : 'TUMBLE WIN'}
+		text={props.isEquation ? 'GAIN MULTIPLIÉ' : 'GAIN DU TOUR'}
 		anchor={0.5}
 		style={{
 			fontFamily: 'system-ui, -apple-system, sans-serif',
 			fontSize: 9,
 			fontWeight: '800',
-			fill: props.isEquation ? 0x69f0ae : 0x64b5f6,
+			fill: props.isEquation ? 0xfacc15 : 0x86efac,
 			letterSpacing: 1,
 		}}
 	/>
