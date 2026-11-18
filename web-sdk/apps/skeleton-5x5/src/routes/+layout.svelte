@@ -16,9 +16,6 @@
 
 	let showYourLoader = $state(false);
 
-	const loaderUrlStakeEngine = new URL('../../stake-engine-loader.gif', import.meta.url).href;
-	const loaderUrl = new URL('../../loader.gif', import.meta.url).href;
-
 	setContext();
 </script>
 
@@ -30,12 +27,10 @@
 	</Authenticate>
 </GlobalStyle>
 
-<LoaderStakeEngine src={loaderUrlStakeEngine} oncomplete={() => (showYourLoader = true)} />
+<LoaderStakeEngine src="./stake-engine-loader.gif" oncomplete={() => (showYourLoader = true)} />
 
 {#if showYourLoader}
-	<LoaderExample src={loaderUrl} />
-	<!-- '/loader.gif' is served from static folder of sveltekit -->
-	<!-- File location: apps/scatter/static/loader.gif -->
+	<LoaderExample src="./loader.gif" />
 {/if}
 
 {@render props.children()}

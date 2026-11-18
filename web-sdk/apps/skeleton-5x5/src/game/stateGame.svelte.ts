@@ -97,13 +97,13 @@ const boardLayout = () => {
 	let scale = 0.85;
 
 	if (layoutType === 'portrait') {
-		yRatio = 0.32;
+		yRatio = stateLayoutDerived.canvasSizes().width <= 600 ? 0.38 : 0.32;
 		scale = 0.95;
 	} else if (layoutType === 'tablet') {
 		yRatio = 0.42;
 		scale = 0.9;
 	} else if (layoutType === 'landscape') {
-		yRatio = 0.43;
+		yRatio = stateLayoutDerived.canvasSizes().height <= 270 ? 0.39 : 0.43;
 		scale = 0.88;
 	}
 

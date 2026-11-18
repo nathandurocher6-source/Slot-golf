@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { Container, BaseSprite } from 'pixi-svelte';
+	import { Container, BaseSprite, getContextApp } from 'pixi-svelte';
 	import { Tween } from 'svelte/motion';
 	import { backOut, cubicIn, cubicOut } from 'svelte/easing';
 	import { stateBet } from 'state-shared';
 	import type { RawSymbol, SymbolState } from '../game/types';
-	import { getSymbolTexture, getSymbolStyle } from '../game/symbolTextureCache';
+	import {
+		getMultiplierAuraTexture,
+		getMultiplierLabelTexture,
+		getSymbolTexture,
+	} from '../game/symbolTextureCache';
 
 	type Props = {
 		x?: number;
@@ -17,9 +21,12 @@
 
 	const props: Props = $props();
 
-	const style = $derived(getSymbolStyle(props.rawSymbol));
+	const { stateApp } = getContextApp();
+	const isMultiplier = $derived(props.rawSymbol.name === 'M');
 	const isWinning = $derived(props.state === 'win' || props.state === 'postWinStatic');
-	const symbolTexture = $derived(getSymbolTexture(props.rawSymbol, isWinning));
+	const symbolTexture = $derived(getSymbolTexture(stateApp.loadedAssets, props.rawSymbol.name));
+	const multiplier = $derived(props.rawSymbol.multiplier ?? 2);
+	const multiplierTint = $derived(multiplier >= 50 ? 0xff225e : multiplier >= 10 ? 0xfbbf24 : 0x00ff88);
 
 	const scale = new Tween(1);
 	const alpha = new Tween(1);
@@ -32,7 +39,7 @@
 			const sDur1 = isTurbo ? 60 : 120;
 			const sDur2 = isTurbo ? 50 : 100;
 
-			const targetScale = style.isMultiplier ? 1.25 : 1.18;
+			const targetScale = isMultiplier ? 1.25 : 1.18;
 			scale
 				.set(targetScale, { duration: sDur1, easing: cubicOut })
 				.then(() => scale.set(1.02, { duration: sDur2, easing: cubicIn }))
@@ -71,8 +78,7 @@
 		}
 	});
 
-	const TILE_WIDTH = 90;
-	const TILE_HEIGHT = 90;
+	const TILE_SIZE = 94;
 </script>
 
 <Container
@@ -81,11 +87,33 @@
 	scale={{ x: scale.current, y: scale.current }}
 	alpha={alpha.current}
 >
-	<!-- High-Performance Baked Texture Sprite: zero CPU geometry tessellation -->
+	{#if isMultiplier}
+		<BaseSprite
+			texture={getMultiplierAuraTexture()}
+			anchor={0.5}
+			width={104}
+			height={104}
+			tint={multiplierTint}
+		/>
+	{/if}
 	<BaseSprite
 		texture={symbolTexture}
 		anchor={0.5}
-		width={TILE_WIDTH}
-		height={TILE_HEIGHT}
+		width={TILE_SIZE}
+		height={TILE_SIZE}
 	/>
+	{#if isWinning}
+		<BaseSprite
+			texture={symbolTexture}
+			anchor={0.5}
+			width={TILE_SIZE}
+			height={TILE_SIZE}
+			tint={0xffe288}
+			alpha={0.2}
+			blendMode="add"
+		/>
+	{/if}
+	{#if isMultiplier}
+		<BaseSprite texture={getMultiplierLabelTexture(multiplier)} anchor={0.5} width={72} height={31.5} />
+	{/if}
 </Container>

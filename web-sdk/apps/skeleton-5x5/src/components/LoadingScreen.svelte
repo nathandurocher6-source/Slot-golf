@@ -10,7 +10,7 @@
 	import TransitionAnimation from './TransitionAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
 
-	import { pregenerateSymbolTextures } from '../game/symbolTextureCache';
+	import { warmMultiplierLabels } from '../game/symbolTextureCache';
 
 	type Props = {
 		onloaded: () => void;
@@ -24,7 +24,7 @@
 	const progress = new Tween(0);
 
 	onMount(async () => {
-		pregenerateSymbolTextures();
+		warmMultiplierLabels();
 		await progress.set(100, { duration: 450, easing: cubicOut });
 		isReady = true;
 	});
@@ -71,7 +71,7 @@
 			<!-- Game Main Title -->
 			<Text
 				y={-6}
-				text="FAIRWAY CHAMPIONS"
+				text="BIRDIE BREAKOUT"
 				anchor={0.5}
 				style={{
 					fontFamily: 'system-ui, -apple-system, sans-serif',

@@ -1,4 +1,12 @@
 // @ts-ignore
 import config from 'config-svelte';
 
-export default config();
+const appConfig = config();
+
+export default {
+	...appConfig,
+	kit: {
+		...appConfig.kit,
+		paths: { ...appConfig.kit.paths, relative: true },
+	},
+};

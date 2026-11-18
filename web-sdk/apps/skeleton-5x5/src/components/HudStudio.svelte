@@ -5,6 +5,7 @@
 	import { OnHotkey } from 'components-shared';
 	import { numberToCurrencyString } from 'utils-shared/amount';
 	import { getContext } from '../game/context';
+	import { golfAssetUrl } from '../game/golfAssets';
 	import MascotGolfer from './MascotGolfer.svelte';
 
 	const context = getContext();
@@ -134,34 +135,12 @@
 <!-- Cartoon Golfer Mascot on Fairway Flank (Desktop only) -->
 <MascotGolfer />
 
-<!-- Top Brand Header Bar: FAIRWAY CHAMPIONS Stylized Golf Logo -->
 <div class="studio-top-bar">
 	<div class="logo-badge-wrap">
-		<!-- Golf Logo Icon with Crossed Clubs and Dimpled Golf Ball -->
-		<svg class="logo-icon" width="38" height="38" viewBox="0 0 48 48" fill="none">
-			<!-- Crossed Iron Clubs -->
-			<path d="M8 40 L38 10" stroke="#facc15" stroke-width="4.5" stroke-linecap="round" />
-			<path d="M40 40 L10 10" stroke="#facc15" stroke-width="4.5" stroke-linecap="round" />
-			<path d="M38 10 Q44 6 42 14 Z" fill="#ffffff" stroke="#000000" stroke-width="2" />
-			<path d="M10 10 Q4 6 6 14 Z" fill="#ffffff" stroke="#000000" stroke-width="2" />
-			<!-- Golden Championship Disc -->
-			<circle cx="24" cy="24" r="14" fill="#062215" stroke="#facc15" stroke-width="3" />
-			<!-- Golf Ball in Center -->
-			<circle cx="24" cy="24" r="8" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
-			<circle cx="22" cy="22" r="1" fill="#cbd5e1" />
-			<circle cx="26" cy="22" r="1" fill="#cbd5e1" />
-			<circle cx="24" cy="25" r="1" fill="#cbd5e1" />
-		</svg>
-
-		<div class="logo-text-block">
-			<div class="logo-title-row">
-				<span class="logo-fairway">FAIRWAY</span>
-				<span class="logo-champions">CHAMPIONS</span>
-			</div>
-			<div class="logo-subline">
-				<span class="subline-badge">96.00% RTP</span>
-				<span class="subline-tag">WINCAP 100 000X</span>
-			</div>
+		<img class="golf-logo" src={golfAssetUrl('logo')} alt="Birdie Breakout" decoding="async" />
+		<div class="logo-subline">
+			<span class="subline-badge">96.00% RTP</span>
+			<span class="subline-tag">WINCAP 100 000X</span>
 		</div>
 	</div>
 
@@ -205,7 +184,7 @@
 <div class="studio-hud-bar">
 	<!-- Left Section: Navigation / Rules & Sound -->
 	<div class="hud-left">
-		<button class="hud-icon-btn" onclick={openPayTable} title="Règles & Table des Gains">
+		<button class="hud-icon-btn" onclick={openPayTable} title="Règles & Table des Gains" aria-label="Règles et table des gains">
 			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
 				<circle cx="12" cy="12" r="10" />
 				<line x1="12" y1="16" x2="12" y2="12" />
@@ -301,7 +280,7 @@
 	.side-bonus-container {
 		position: fixed;
 		left: 24px;
-		top: 36%;
+		top: min(36%, max(186px, calc(100% - 484px)));
 		transform: translateY(-50%);
 		z-index: 60;
 
@@ -691,7 +670,7 @@
 		border-radius: 4px;
 	}
 
-	/* Top Bar: Stylized FAIRWAY CHAMPIONS Logo */
+	/* Top Bar */
 	.studio-top-bar {
 		position: fixed;
 		top: 14px;
@@ -700,62 +679,49 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: 8px;
 		pointer-events: none;
 		z-index: 50;
 		user-select: none;
+
+		@media (max-width: 600px) {
+			top: 8px;
+			left: 10px;
+			right: 10px;
+		}
 	}
 
 	.logo-badge-wrap {
 		display: flex;
 		align-items: center;
 		gap: 12px;
+		min-width: 0;
 		background: rgba(13, 26, 19, 0.96);
 		border: 1.5px solid #1e4d35;
 		border-radius: 16px;
-		padding: 6px 16px 6px 10px;
+		padding: 4px 10px 4px 6px;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+
+		@media (max-width: 400px) {
+			gap: 6px;
+			padding-inline: 6px;
+		}
 	}
 
-	.logo-icon {
-		flex-shrink: 0;
-		filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
-	}
-
-	.logo-text-block {
-		display: flex;
-		flex-direction: column;
-		gap: 1px;
-	}
-
-	.logo-title-row {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		line-height: 1.1;
-	}
-
-	.logo-fairway {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 15px;
-		font-weight: 900;
-		letter-spacing: 1.2px;
-		color: #facc15;
-		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-	}
-
-	.logo-champions {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 15px;
-		font-weight: 900;
-		letter-spacing: 1.2px;
-		color: #4ade80;
-		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+	.golf-logo {
+		display: block;
+		width: clamp(95px, 16.8vw, 157px);
+		min-width: 0;
+		height: auto;
 	}
 
 	.logo-subline {
 		display: flex;
-		align-items: center;
-		gap: 8px;
+		flex-direction: column;
+		flex-shrink: 0;
+		align-items: flex-start;
+		gap: 4px;
+		white-space: nowrap;
 	}
 
 	.subline-badge {
@@ -774,13 +740,24 @@
 		font-weight: 800;
 		color: #facc15;
 		letter-spacing: 1.2px;
+
+		@media (max-width: 400px) {
+			font-size: 8.5px;
+			letter-spacing: 0.7px;
+		}
 	}
 
 	.top-studio {
+		flex-shrink: 0;
+		white-space: nowrap;
 		background: rgba(13, 26, 19, 0.85);
 		border: 1px solid #1e4d35;
 		border-radius: 10px;
 		padding: 6px 12px;
+
+		@media (max-width: 400px) {
+			padding-inline: 7px;
+		}
 	}
 
 	.studio-tag {
@@ -789,5 +766,158 @@
 		font-weight: 800;
 		color: #86efac;
 		letter-spacing: 2px;
+
+		@media (max-width: 400px) {
+			font-size: 9px;
+			letter-spacing: 0.8px;
+		}
+	}
+
+	@media (max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape) {
+		.studio-hud-bar {
+			box-sizing: content-box;
+			padding-left: max(8px, env(safe-area-inset-left));
+			padding-right: max(8px, env(safe-area-inset-right));
+			padding-bottom: env(safe-area-inset-bottom);
+			touch-action: manipulation;
+		}
+
+		.studio-top-bar {
+			top: max(8px, env(safe-area-inset-top));
+			left: max(10px, env(safe-area-inset-left));
+			right: max(10px, env(safe-area-inset-right));
+		}
+
+		.side-bonus-container {
+			left: max(12px, env(safe-area-inset-left));
+		}
+
+		.side-bonus-btn {
+			height: 44px;
+		}
+
+		.bonus-tag {
+			display: none;
+		}
+
+		.hud-left,
+		.hud-meters {
+			gap: 4px;
+		}
+
+		.hud-actions {
+			flex-shrink: 0;
+			gap: 4px;
+		}
+
+		.hud-icon-btn,
+		.hud-mode-btn,
+		.bet-step-btn {
+			width: 44px;
+			height: 44px;
+			padding: 0;
+			justify-content: center;
+		}
+
+		.bet-val-btn {
+			min-width: 52px;
+			min-height: 44px;
+			padding: 2px 4px;
+			justify-content: center;
+		}
+
+		.meter-box {
+			flex: 1 1 0;
+			min-width: 0;
+			padding: 4px 6px;
+		}
+
+		.meter-val {
+			font-size: 13px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.golf-logo {
+			width: 88px;
+		}
+	}
+
+	@media (max-width: 600px) and (orientation: portrait) {
+		.studio-hud-bar {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			grid-template-areas: 'tools meters' 'actions actions';
+			gap: 4px 8px;
+			height: auto;
+			padding-top: 5px;
+			padding-bottom: calc(5px + env(safe-area-inset-bottom));
+		}
+
+		.hud-left {
+			grid-area: tools;
+		}
+
+		.hud-meters {
+			grid-area: meters;
+		}
+
+		.hud-actions {
+			grid-area: actions;
+			justify-content: space-between;
+		}
+
+		.side-bonus-container {
+			bottom: calc(118px + env(safe-area-inset-bottom));
+		}
+	}
+
+	@media (max-height: 500px) and (orientation: landscape) {
+		.studio-hud-bar {
+			height: 52px;
+			gap: 6px;
+		}
+
+		.hud-meters {
+			flex: 0 1 235px;
+			min-width: 0;
+		}
+
+		.meter-box {
+			flex-basis: auto;
+			padding-inline: 4px;
+		}
+
+		.meter-val {
+			font-size: 12px;
+		}
+
+		.hud-mode-btn .mode-text {
+			display: none;
+		}
+
+		.spin-circle-btn {
+			width: 50px;
+			height: 50px;
+		}
+
+		.side-bonus-container {
+			bottom: calc(60px + env(safe-area-inset-bottom));
+		}
+
+		.logo-badge-wrap {
+			gap: 6px;
+			padding: 3px 8px 3px 6px;
+		}
+
+		.golf-logo {
+			width: 54px;
+		}
+
+		.subline-tag {
+			font-size: 8.5px;
+			letter-spacing: 0.7px;
+		}
 	}
 </style>

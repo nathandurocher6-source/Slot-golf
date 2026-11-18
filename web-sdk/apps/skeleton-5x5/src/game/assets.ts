@@ -1,10 +1,18 @@
-// Studio Greybox Assets Configuration
-// Procedural vector/canvas rendering is active by default for symbols.
-// The official sound sprite sheet is loaded here.
+import type { Asset, Assets } from 'pixi-svelte';
+import { GOLF_SYMBOL_ART, golfAssetUrl } from './golfAssets';
+
+const golfTextures = ['background', 'board-frame', ...Object.values(GOLF_SYMBOL_ART)];
+
 export default {
+	...Object.fromEntries(
+		golfTextures.map((name) => [
+			name,
+			{ type: 'sprite', src: golfAssetUrl(name), preload: true } satisfies Asset,
+		]),
+	),
 	sound: {
 		type: 'audio',
-		src: new URL('../../assets/audio/sounds.json', import.meta.url).href,
+		src: './assets/audio/sounds.json',
 		preload: true,
 	},
-} as const;
+} satisfies Assets;

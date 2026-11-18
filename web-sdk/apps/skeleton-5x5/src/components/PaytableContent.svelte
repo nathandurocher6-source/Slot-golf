@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { stateBet, stateModal } from 'state-shared';
-	import { getSymbolDataUrl } from '../game/symbolTextureCache';
+	import { getSymbolImageUrl } from '../game/golfAssets';
 
 	type Tab = 'payouts' | 'features' | 'rules';
 	let activeTab = $state<Tab>('payouts');
@@ -32,7 +32,7 @@
 		{
 			id: 'H2',
 			name: 'VOITURETTE DE GOLF',
-			subtitle: 'CART BLANC & ÉMERAUDE',
+			subtitle: 'BLEU ET BLANC, SAC ROUGE',
 			desc: 'Buggy de fairway tout confort avec sac de clubs fixé à l’arrière.',
 			color: '#a7f3d0',
 			bg: '#07261a',
@@ -64,7 +64,7 @@
 		{
 			id: 'H4',
 			name: 'TEES DE GOLF',
-			subtitle: 'DUO ROSE & TURQUOISE',
+			subtitle: 'DUO DORÉ ET IVOIRE',
 			desc: 'Tees de golf fluo plantés dans une touffe d’herbe verte fraîche.',
 			color: '#fda4af',
 			bg: '#1e0e24',
@@ -77,7 +77,7 @@
 				{ count: '5', mult: 1.5 },
 			],
 		},
-	];
+	] as const;
 
 	// Low paying golf symbols (A, K, Q, J, 10 with golf green & ball dimples)
 	const lowSymbols = [
@@ -156,7 +156,7 @@
 				{ count: '5', mult: 0.2 },
 			],
 		},
-	];
+	] as const;
 
 	const formatCash = (mult: number) => {
 		const val = mult * baseBet;
@@ -170,7 +170,7 @@
 		<div class="modal-title-row">
 			<div class="modal-title-wrap">
 				<span class="badge-studio">STAKE ENGINE</span>
-				<h2 class="modal-title">FAIRWAY CHAMPIONS — RÈGLES & PAIEMENTS</h2>
+				<h2 class="modal-title">BIRDIE BREAKOUT — RÈGLES & PAIEMENTS</h2>
 			</div>
 			<button class="modal-close-btn" onclick={closeModal} title="Fermer la fenêtre">✕</button>
 		</div>
@@ -206,7 +206,7 @@
 						<div class="symbol-card">
 							<div class="symbol-thumb-wrap">
 								<img
-									src={getSymbolDataUrl({ name: sym.id })}
+									src={getSymbolImageUrl(sym.id)}
 									alt={sym.name}
 									class="symbol-img"
 								/>
@@ -236,7 +236,7 @@
 						<div class="symbol-card">
 							<div class="symbol-thumb-wrap low-thumb">
 								<img
-									src={getSymbolDataUrl({ name: sym.id })}
+									src={getSymbolImageUrl(sym.id)}
 									alt={sym.name}
 									class="symbol-img"
 								/>
@@ -266,7 +266,7 @@
 					<!-- Wild: Championship Trophy -->
 					<div class="special-card">
 						<div class="symbol-thumb-wrap special-thumb">
-							<img src={getSymbolDataUrl({ name: 'W' })} alt="Trophée Wild" class="symbol-img" />
+							<img src={getSymbolImageUrl('W')} alt="Trophée Wild" class="symbol-img" />
 						</div>
 						<div class="special-desc">
 							<h4>TROPHÉE WILD (W) — COUPE EN OR MASSIF</h4>
@@ -277,7 +277,7 @@
 					<!-- Scatter: Green & Flag #18 -->
 					<div class="special-card">
 						<div class="symbol-thumb-wrap special-thumb">
-							<img src={getSymbolDataUrl({ name: 'S' })} alt="Drapeau 18 Scatter" class="symbol-img" />
+							<img src={getSymbolImageUrl('S')} alt="Drapeau 18 Scatter" class="symbol-img" />
 						</div>
 						<div class="special-desc">
 							<h4>DRAPEAU N°18 SCATTER (S) — TOURS GRATUITS</h4>
@@ -294,7 +294,8 @@
 					<!-- Multiplier: Golden Energy Golf Ball -->
 					<div class="special-card">
 						<div class="symbol-thumb-wrap special-thumb">
-							<img src={getSymbolDataUrl({ name: 'M', multiplier: 50 })} alt="Balle Multiplicateur" class="symbol-img" />
+							<img src={getSymbolImageUrl('M')} alt="Balle Multiplicateur" class="symbol-img" />
+							<span class="multiplier-example">x50</span>
 						</div>
 						<div class="special-desc">
 							<h4>BALLE MULTIPLICATEUR (M) — VALEURS DE x2 À x1000</h4>
@@ -349,10 +350,12 @@
 	.modal-card {
 		font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 		color: #e2e8f0;
-		width: 92vw;
+		box-sizing: border-box;
+		width: min(92vw, calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 16px));
 		max-width: 840px;
 		height: 82vh;
-		max-height: 82vh;
+		height: 82dvh;
+		max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);
 		background: #09130e;
 		border: 1.5px solid #1c4430;
 		border-radius: 20px;
@@ -369,6 +372,10 @@
 		background: #0d1e16;
 		border-bottom: 1.5px solid #1a3d2b;
 		flex-shrink: 0;
+
+		@media (max-width: 600px) {
+			padding: 12px 12px 0;
+		}
 	}
 
 	.modal-title-row {
@@ -382,6 +389,11 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
+		min-width: 0;
+
+		@media (max-width: 600px) {
+			gap: 6px;
+		}
 	}
 
 	.badge-studio {
@@ -403,13 +415,14 @@
 		color: #facc15;
 
 		@media (max-width: 600px) {
-			font-size: 0.95rem;
+			font-size: 15px;
 		}
 	}
 
 	.modal-close-btn {
 		width: 36px;
 		height: 36px;
+		flex-shrink: 0;
 		border-radius: 10px;
 		background: #132b1f;
 		border: 1px solid #1e4d35;
@@ -486,6 +499,7 @@
 
 	.modal-body {
 		flex: 1;
+		min-height: 0;
 		overflow-y: auto;
 		padding: 24px;
 		display: flex;
@@ -569,6 +583,7 @@
 	}
 
 	.symbol-thumb-wrap {
+		position: relative;
 		width: 64px;
 		height: 64px;
 		border-radius: 12px;
@@ -593,6 +608,15 @@
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
+	}
+
+	.multiplier-example {
+		position: absolute;
+		color: #fffdf1;
+		font-size: 17px;
+		font-weight: 900;
+		-webkit-text-stroke: 3px #211104;
+		paint-order: stroke fill;
 	}
 
 	.symbol-info {

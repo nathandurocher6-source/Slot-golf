@@ -1,5 +1,4 @@
 import { API_AMOUNT_MULTIPLIER } from 'constants-shared/bet';
-import { stateUrlDerived } from 'state-shared';
 import simulatedBooksPool from '../stories/data/simulated_books_pool.json';
 import wincapBook from '../stories/data/wincap_book.json';
 import extracted from '../stories/data/extracted_books.json';
@@ -17,8 +16,8 @@ export const setMockBalance = (amount: number) => {
 export const initMockRgs = () => {
 	if (typeof window === 'undefined') return;
 
-	// Only enable mock if no explicit external RGS URL is specified
-	const externalRgsUrl = stateUrlDerived.rgsUrl();
+	// Read the launch URL before SvelteKit has populated its page state.
+	const externalRgsUrl = new URLSearchParams(window.location.search).get('rgs_url');
 	if (externalRgsUrl && externalRgsUrl.trim() !== '') {
 		return;
 	}
