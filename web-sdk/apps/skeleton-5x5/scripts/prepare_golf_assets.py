@@ -294,6 +294,9 @@ def main():
                      if (normalize_stem(stem), extension) in sources), None)
 
     for name, aliases in SOURCE_NAMES.items():
+        # The studio supplies the current Practice Panic! logo directly in static.
+        if name == 'logo':
+            continue
         if args.symbols_only and name not in SYMBOLS:
             continue
         source = source_for(name, aliases)

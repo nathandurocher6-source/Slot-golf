@@ -1,6 +1,7 @@
 import { GOLF_FRAME_PANEL } from './golfAssets';
 
 type Screen = { width: number; height: number };
+const BRAND_HEIGHT_AT_REFERENCE_WIDTH = 708 / 1224;
 
 // Fractional image coordinates on the runtime PNGs, measured from their trimmed bounds.
 export const PRACTICE_ART = {
@@ -32,6 +33,54 @@ function safeAreas() {
 function composePractice({ width, height }: Screen) {
 	const safe = safeAreas();
 	const portrait = width / height < 1.18;
+	const portraitPhone = width <= 620 && width <= height;
+	if (portraitPhone) {
+		const canvasFloor = height - Math.max(6, safe.bottom) - 143;
+		const side = Math.max(8, safe.left + 5, safe.right + 5);
+		const header = Math.max(6, safe.top) + 58;
+		const room = Math.max(1, canvasFloor - header);
+		const frameRatio = GOLF_FRAME_PANEL.height / GOLF_FRAME_PANEL.width;
+		const visibleRatio = PRACTICE_ART.frame.bottom - PRACTICE_ART.frame.top;
+		const minDecoratorHeight = Math.min(width * 0.28, room * 0.28);
+		const frameHeight = Math.max(
+			1,
+			Math.min((width - 2 * side) / frameRatio, (room - minDecoratorHeight - 4) / visibleRatio),
+		);
+		const visibleHeight = frameHeight * visibleRatio;
+		const stationHeight = Math.min(width * 0.47, room - visibleHeight - 4);
+		const headerAir = Math.min(24, Math.max(0, (room - visibleHeight - stationHeight - 4) * 0.53));
+		const frameFoot = header + headerAir + visibleHeight;
+		const apronTop = frameFoot - Math.min(16, width * 0.04);
+		const deckBottom = height - Math.max(6, safe.bottom) - 137;
+		const platformHeight = Math.max(1, deckBottom - apronTop);
+		const platformFloor = 0.884;
+		const turfFloor = apronTop + platformHeight * platformFloor;
+		const propHeight = Math.max(0, Math.min(stationHeight, turfFloor - frameFoot - 4));
+		return {
+			portrait,
+			portraitPhone,
+			floor: turfFloor,
+			hudTop: deckBottom + 3,
+			platformFloor,
+			platformWidth: width - side,
+			platformHeight,
+			frameWidth: frameHeight * frameRatio,
+			frameHeight,
+			frameX: width / 2,
+			frameY: frameFoot - frameHeight * (PRACTICE_ART.frame.bottom - GOLF_FRAME_PANEL.center.y),
+			frameFoot,
+			golfer: {
+				left: side + width * 0.067,
+				right: width * 0.61,
+				maxHeight: propHeight,
+			},
+			dispenser: {
+				left: width * 0.65,
+				right: width - side - width * 0.088,
+				maxHeight: propHeight * 0.7,
+			},
+		};
+	}
 	const compact = !portrait && height <= 560;
 	const sidePadding = portrait ? 8 : Math.max(12, width * (compact ? 0.027 : 0.021));
 	const platformWidth = Math.max(
@@ -50,7 +99,7 @@ function composePractice({ width, height }: Screen) {
 	// Match the logo's native aspect, the badge gap and the purchase button.
 	const brandBottom =
 		Math.max(12, safe.top) +
-		Math.min(210, Math.max(120, width * 0.13)) * (708 / 1224) +
+		Math.min(210, Math.max(120, width * 0.13)) * BRAND_HEIGHT_AT_REFERENCE_WIDTH +
 		Math.min(10, Math.max(8, width * 0.008)) +
 		Math.min(48, Math.max(44, width * 0.033));
 	const header = portrait
@@ -76,15 +125,18 @@ function composePractice({ width, height }: Screen) {
 	const laneRight = width - laneLeft;
 	// Match the compact logo width, the badge gap and Buy Bonus's 34px button.
 	const compactBrandHeight =
-		Math.max(6, safe.top) + Math.min(112, Math.max(63, width * 0.125)) * (708 / 1224) + 44;
+		Math.max(6, safe.top) +
+		Math.min(112, Math.max(63, width * 0.125)) * BRAND_HEIGHT_AT_REFERENCE_WIDTH +
+		44;
 	const leftLimit = portrait ? width * 0.47 : frameLeft - width * 0.009;
 	const rightLimit = portrait ? width * 0.61 : frameRight + width * 0.02;
 
 	return {
 		portrait,
-		compact,
+		portraitPhone,
 		floor,
 		hudTop,
+		platformFloor: PRACTICE_ART.platform.floor,
 		platformWidth,
 		platformHeight,
 		frameWidth,

@@ -21,7 +21,7 @@
 		style:top={`${fairway.floor}px`}
 		style:height={`${fairway.golferHeight}px`}
 		src={golfAssetUrl('mascot')}
-		alt="Birdie Breakout golfer"
+		alt="Practice Panic! golfer"
 		draggable="false"
 	/>
 {/if}

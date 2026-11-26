@@ -31,8 +31,11 @@ export const createLayout = (layoutOptions: {
 		portrait: number;
 	};
 	mainSizesMap: MainSizesMap;
+	canvasSizes?: () => Sizes;
 }) => {
-	const canvasSizes = () => ({ width: innerWidth.current ?? 1, height: innerHeight.current ?? 1 }); // because of resizeTo: window
+	const canvasSizes =
+		layoutOptions.canvasSizes ??
+		(() => ({ width: innerWidth.current ?? 1, height: innerHeight.current ?? 1 }));
 	const canvasRatio = () => getRatio(canvasSizes());
 	const canvasRatioType = () => {
 		if (canvasRatio() >= CANVAS_RATIO_TYPE_BREAK_POINTS.wideSquare) return 'longWidth' as const;

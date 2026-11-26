@@ -5,7 +5,9 @@
 	import { OnHotkey } from 'components-shared';
 	import { numberToCurrencyString } from 'utils-shared/amount';
 	import { getContext } from '../game/context';
+	import { branding } from '../game/branding';
 	import { golfAssetUrl } from '../game/golfAssets';
+	import SpinDirection from './SpinDirection.svelte';
 
 	const context = getContext();
 
@@ -13,6 +15,15 @@
 	let stopDisabled = $state(false);
 
 	const isIdle = $derived(context.stateXstateDerived.isIdle());
+	const reelsMoving = $derived(
+		context.stateGame.board.some((reel) => reel.reelState.motion !== 'stopped') ||
+			context.stateGame.tumbleBoardAdding.some((reel) =>
+				reel.some((symbol) => symbol.symbolY.current !== symbol.symbolY.target),
+			) ||
+			context.stateGame.tumbleBoardBase.some((reel) =>
+				reel.some((symbol) => symbol.symbolY.current !== symbol.symbolY.target),
+			),
+	);
 	const canAffordBet = $derived(stateBetDerived.isBetCostAvailable());
 	const hasAutoSpin = $derived(stateBetDerived.hasAutoBetCounter());
 	const isTurbo = $derived(stateBet.isTurbo);
@@ -151,7 +162,7 @@
 />
 <header class="studio-top-bar" class:championship>
 	<div class="studio-brand">
-		<img src={golfAssetUrl('logo')} class="golf-logo" alt="Birdie Breakout" draggable="false" />
+		<img src={branding.logo} class="golf-logo" alt={branding.title} draggable="false" />
 		<div class="logo-subline"><span>96.00% RTP</span><span>MAX WIN ×100,000</span></div>
 	</div>
 	{#if !championship}
@@ -167,11 +178,13 @@
 <div class="studio-hud-bar" class:championship inert={presentation}>
 	<div class="hud-west">
 		<div class="hud-left">
-			<button class="hud-icon-btn" onclick={openSettings} aria-label="Menu and settings"
+			<button class="hud-icon-btn menu-btn" onclick={openSettings} aria-label="Menu and settings"
 				>MENU</button
 			>
-			<button class="hud-icon-btn" onclick={openPayTable} aria-label="Information and paytable"
-				>INFO</button
+			<button
+				class="hud-icon-btn info-btn"
+				onclick={openPayTable}
+				aria-label="Information and paytable">INFO</button
 			>
 		</div>
 		<div class="hud-meters">
@@ -200,6 +213,7 @@
 		title={isIdle ? 'Spin (Space)' : 'Stop spin'}
 	>
 		<img class="spin-sphere" src={golfAssetUrl('golf-ball')} alt="" draggable="false" />
+		<SpinDirection active={!presentation && !isIdle && reelsMoving} />
 		<span class="spin-label" aria-hidden="true">{isIdle ? 'SPIN' : 'STOP'}</span>
 	</button>
 
@@ -291,7 +305,7 @@
 		position: fixed;
 		inset-inline-start: max(5vw, env(safe-area-inset-left));
 		inset-inline-end: max(5vw, env(safe-area-inset-right));
-		bottom: max(14px, calc(env(safe-area-inset-bottom) + 5px));
+		bottom: calc(var(--practice-browser-inset, 0px) + max(14px, env(safe-area-inset-bottom) + 5px));
 		box-sizing: border-box;
 		z-index: 55;
 		display: grid;
@@ -546,7 +560,7 @@
 
 	.golf-logo {
 		display: block;
-		width: clamp(120px, 13vw, 210px);
+		width: clamp(104px, 11.28vw, 182px);
 		height: auto;
 	}
 
@@ -605,7 +619,7 @@
 			--hud-gap: 4px;
 			inset-inline-start: max(6px, env(safe-area-inset-left));
 			inset-inline-end: max(6px, env(safe-area-inset-right));
-			bottom: max(5px, env(safe-area-inset-bottom));
+			bottom: calc(var(--practice-browser-inset, 0px) + max(5px, env(safe-area-inset-bottom)));
 			grid-template-columns: minmax(0, 0.97fr) var(--spin-size) minmax(0, 1.03fr);
 			min-height: 58px;
 			padding: 5px 8px;
@@ -656,7 +670,7 @@
 		}
 
 		.golf-logo {
-			width: clamp(63px, 12.5vw, 112px);
+			width: clamp(55px, 10.85vw, 97px);
 		}
 
 		.logo-subline {
@@ -685,105 +699,138 @@
 
 	@media (orientation: portrait) and (max-width: 620px) {
 		.studio-hud-bar {
-			--spin-size: 58px;
+			--spin-size: 64px;
 			--control-height: 44px;
-			--hud-gap: 5px;
+			--hud-gap: 4px;
 			inset-inline-start: max(6px, env(safe-area-inset-left));
 			inset-inline-end: max(6px, env(safe-area-inset-right));
-			bottom: max(6px, env(safe-area-inset-bottom));
-			grid-template-columns: minmax(101px, 1.2fr) var(--spin-size) minmax(0, 1fr) 47px;
-			grid-template-areas: 'west west west sound' 'stake spin modes modes';
-			padding: 6px;
+			bottom: calc(var(--practice-browser-inset, 0px) + max(6px, env(safe-area-inset-bottom)));
+			grid-template-columns: 44px 44px minmax(0, 1.15fr) minmax(0, 1fr) 44px;
+			grid-template-areas: 'menu info balance win sound' 'play play play play play';
+			padding: 5px 6px;
 			border-radius: 18px;
 		}
-
-		.hud-west {
-			grid-area: west;
-		}
-
+		.hud-west,
+		.hud-left,
+		.hud-meters,
 		.hud-east {
 			display: contents;
 		}
-
-		.bet-selector {
-			grid-area: stake;
-			justify-self: start;
+		.menu-btn {
+			grid-area: menu;
+		}
+		.info-btn {
+			grid-area: info;
+		}
+		.meter-box:first-child {
+			grid-area: balance;
+		}
+		.meter-box:last-child {
+			grid-area: win;
+		}
+		.meter-box {
+			padding-inline: 4px;
+		}
+		.meter-val {
+			font-size: clamp(8px, calc(156cqi / var(--digits)), 15px);
 		}
 
+		.bet-selector,
+		.spin-circle-btn,
 		.hud-modes {
-			grid-area: modes;
-			justify-content: flex-end;
+			grid-area: play;
 		}
-
+		.bet-selector {
+			justify-self: start;
+			gap: 1px;
+		}
+		.hud-modes {
+			justify-self: end;
+		}
 		.hud-modes .hud-mode-btn {
 			flex: 0 1 auto;
 		}
-
 		.hud-icon-btn,
 		.hud-mode-btn {
-			min-width: 40px;
-			padding-inline: 5px;
+			min-width: 44px;
+			padding-inline: 4px;
 			border-radius: 8px;
 			font-size: 9px;
-		}
-
-		.hud-mode-btn {
-			min-width: 44px;
 			white-space: normal;
 		}
-
 		.sound-btn {
 			grid-area: sound;
 			width: 100%;
 			margin: 0;
 		}
-
 		.bet-step-btn {
-			width: 28px;
-			height: var(--control-height);
+			width: clamp(34px, calc((100vw - 251px) / 2), 44px);
+			height: 44px;
 		}
-
-		.bet-selector {
-			gap: 2px;
-		}
-
 		.bet-val-btn {
-			min-width: 47px;
-			padding: 0 3px;
+			min-width: clamp(39px, 11vw, 55px);
+			padding: 0 1px;
 		}
-
+		.bet-val-btn strong {
+			font-size: clamp(10px, 3vw, 14px);
+		}
 		.spin-circle-btn {
-			grid-area: 2 / 1 / 3 / -1;
 			justify-self: center;
 			margin-block: 0;
 		}
 
 		.studio-top-bar {
 			left: max(7px, env(safe-area-inset-left));
+			right: max(7px, env(safe-area-inset-right));
 			top: max(6px, env(safe-area-inset-top));
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
 			gap: 5px;
 		}
-
 		.golf-logo {
-			width: clamp(88px, 26vw, 142px);
+			width: auto;
+			height: 54px;
 		}
-
+		.logo-subline {
+			gap: 3px;
+		}
 		.logo-subline span {
-			padding: 3px 6px;
+			padding: 3px 5px;
 			font-size: 8px;
 		}
-
 		.side-bonus-btn {
-			min-width: 80px;
-			min-height: 38px;
-			padding: 3px 8px;
+			min-width: 79px;
+			min-height: 44px;
+			padding: 3px 6px;
 			border-width: 1px;
 			border-radius: 8px;
 		}
-
 		.side-bonus-btn strong,
 		.side-bonus-btn small {
 			font-size: 9px;
+		}
+	}
+
+	@media (orientation: portrait) and (max-width: 350px) {
+		.studio-brand {
+			gap: 3px;
+		}
+
+		.logo-subline span {
+			padding-inline: 4px;
+		}
+
+		.studio-hud-bar {
+			grid-template-columns: 44px 44px minmax(0, 1.08fr) minmax(0, 1fr);
+			grid-template-areas: 'menu info balance win' 'play play play play';
+		}
+
+		.sound-btn {
+			position: fixed;
+			top: calc(max(6px, env(safe-area-inset-top)) + 5px);
+			right: calc(max(7px, env(safe-area-inset-right)) + 85px);
+			width: 44px;
 		}
 	}
 </style>

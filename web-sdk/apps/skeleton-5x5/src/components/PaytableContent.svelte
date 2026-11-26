@@ -169,7 +169,7 @@
 	<div class="modal-header">
 		<div class="modal-title-row">
 			<div class="modal-title-wrap">
-				<h2 class="modal-title">BIRDIE BREAKOUT — RULES & PAYOUTS</h2>
+				<h2 class="modal-title">PRACTICE PANIC! — RULES & PAYOUTS</h2>
 			</div>
 			<button class="modal-close-btn" onclick={closeModal} title="Close paytable">✕</button>
 		</div>

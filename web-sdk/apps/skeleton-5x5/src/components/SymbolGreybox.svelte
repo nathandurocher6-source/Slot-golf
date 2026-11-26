@@ -13,6 +13,7 @@
 	import { SYMBOL_SIZE } from '../game/constants';
 	import type { RawSymbol, SymbolState } from '../game/types';
 	import { getMultiplierLabelTexture, getSymbolTexture } from '../game/symbolTextureCache';
+	import { SYMBOL_MOTION } from '../game/symbolMotion';
 
 	type Props = {
 		x?: number;
@@ -32,6 +33,7 @@
 	const isWinning = $derived(props.state === 'win' || props.state === 'postWinStatic');
 	const symbolTexture = $derived(getSymbolTexture(stateApp.loadedAssets, props.rawSymbol.name));
 	const multiplier = $derived(props.rawSymbol.multiplier ?? 2);
+	const motion = $derived(SYMBOL_MOTION[props.rawSymbol.name]);
 
 	const scale = new Tween(1);
 	const alpha = new Tween(1);
@@ -116,27 +118,30 @@
 		const decay = (1 - settle) ** 2;
 		const compression = p < 0.26 ? p / 0.26 : (1 - settle) ** 5;
 		const rebound = Math.sin(Math.PI * settle) * (1 - 0.38 * settle);
-		const sway = Math.sin(3 * Math.PI * settle) * decay;
+		// One small counter-lean after impact, damped toward zero. The tile
+		// stays in its column throughout the entire fall and rebound.
+		const counterLean = Math.sin(2 * Math.PI * settle) * decay;
 		const direction = motionSeed % 2 ? 1 : -1;
-		const variation = 0.94 + (motionSeed % 5) * 0.03;
+		const variation = 0.95 + (motionSeed % 5) * 0.025;
 		const t = fallProgress;
 		const fall = Math.sin(Math.PI * t) * (0.58 + 0.7 * t);
 		const distance = trajectory ? trajectory.end - trajectory.start : 0;
 		// The sprite lags then catches the original Tween. Logical positions and durations
 		// still come entirely from the reel and cascade controllers.
-		const fallLag = t * (1 - t) * Math.min(distance * 0.78, SYMBOL_SIZE * 1.04);
-		const verticalSquash = variation * 0.108 * compression;
+		const fallLag = t * (1 - t) * Math.min(distance * 0.7, SYMBOL_SIZE * 0.85);
+		const verticalSquash = variation * motion.squash * compression;
 		const impactOffset = (TILE_SIZE / 2) * verticalSquash;
 
 		tile.position.set(
-			(props.x ?? 0) + SYMBOL_SIZE * direction * variation * (0.034 * fall - 0.049 * sway),
-			(props.y ?? 0) + impactOffset - fallLag - SYMBOL_SIZE * variation * 0.184 * rebound,
+			props.x ?? 0,
+			(props.y ?? 0) + impactOffset - fallLag - SYMBOL_SIZE * variation * motion.rebound * rebound,
 		);
 		tile.scale.set(
-			scale.current * (1 + variation * (0.052 * compression - 0.022 * fall)),
-			scale.current * (1 - verticalSquash + variation * (0.066 * fall + 0.029 * rebound)),
+			scale.current * (1 + verticalSquash * 0.48 - motion.stretch * 0.28 * fall),
+			scale.current * (1 - verticalSquash + variation * motion.stretch * (fall + rebound * 0.32)),
 		);
-		tile.rotation = direction * variation * (0.092 * fall + 0.079 * compression - 0.058 * sway);
+		tile.rotation =
+			direction * variation * motion.tilt * (fall + 0.48 * compression - 0.56 * counterLean);
 		tile.alpha = alpha.current;
 	});
 

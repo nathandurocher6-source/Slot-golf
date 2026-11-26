@@ -1,6 +1,8 @@
 import { createLayout } from 'utils-layout';
+import { practiceViewport } from './practiceViewport.svelte';
 
 export const { stateLayout, stateLayoutDerived } = createLayout({
+	canvasSizes: practiceViewport,
 	backgroundRatio: {
 		normal: 2039 / 1000,
 		portrait: 1242 / 2208,

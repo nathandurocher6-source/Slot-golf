@@ -9,7 +9,7 @@
 	import Game from '../components/Game.svelte';
 	import { setContext } from '../game/context';
 	import { stateApp } from '../game/stateApp';
-	import { golfAssetUrl } from '../game/golfAssets';
+	import { branding } from '../game/branding';
 
 	import messagesMap from '../i18n/messagesMap';
 
@@ -35,8 +35,8 @@
 </GlobalStyle>
 
 {#if !stateApp.loaded}
-	<div class="clubhouse-loading" role="status" aria-label="Loading Birdie Breakout">
-		<img src={golfAssetUrl('logo')} alt="Birdie Breakout" />
+	<div class="clubhouse-loading" role="status" aria-label={`Loading ${branding.title}`}>
+		<img src={branding.logo} alt={branding.title} />
 		<span></span>
 	</div>
 {/if}

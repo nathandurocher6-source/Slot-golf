@@ -61,6 +61,27 @@ def save_platform_light(platform):
     light.save(PRACTICE / 'platform_light.png', optimize=True)
 
 
+def save_portrait_platform(platform):
+    # Open the turf surface toward the camera in portrait. Keep the front
+    # fascia in its own band so the gold edge retains the original profile.
+    width, height = 768, 288
+    sections = ((0, 20, 23), (20, 96, 245), (96, 155, 20))
+    deck = Image.new('RGBA', (width, height))
+    y = 0
+    for start, end, rows in sections:
+        section = platform.crop((0, start, platform.width, end))
+        deck.paste(section.resize((width, rows), Image.Resampling.LANCZOS), (0, y))
+        y += rows
+    deck = deck.transform(
+        deck.size, Image.Transform.QUAD, (-73, 0, 0, height, width, height, width + 73, 0),
+        Image.Resampling.BICUBIC,
+    )
+    pixels = np.array(deck)
+    light = np.linspace(0.86, 0.99, height)[:, None, None]
+    pixels[:, :, :3] = np.round(pixels[:, :, :3] * light)
+    Image.fromarray(pixels).save(PRACTICE / 'platform_portrait.png', optimize=True)
+
+
 def save_reel_recess():
     with Image.open(ASSETS / 'course/board-frame.png') as master:
         frame = master.convert('RGBA').resize((512, 512), Image.Resampling.LANCZOS)
@@ -89,12 +110,26 @@ def save_reel_recess():
     recess.save(PRACTICE / 'reel_recess.png', optimize=True)
 
 
+def save_ambient_birds():
+    # Three provisional wing poses in one atlas, drawn at 4x for clean edges.
+    atlas = Image.new('RGBA', (96, 20))
+    for index, tip in enumerate((1, 7, 15)):
+        pose = Image.new('RGBA', (128, 80))
+        points = [(2, tip + 1), (7, tip + 1), (14, 9), (17, 9), (24, tip), (30, tip + 1),
+                  (24, 8), (19, 11), (17, 15), (14, 13), (10, 11), (6, 8)]
+        ImageDraw.Draw(pose).polygon([(x * 4, y * 4) for x, y in points], fill='white')
+        atlas.paste(pose.resize((32, 20), Image.Resampling.LANCZOS), (index * 32, 0))
+    atlas.save(PRACTICE / 'ambient_birds.png', optimize=True)
+
+
 def main():
     with Image.open(PRACTICE / 'practice_platform.png') as master:
         platform = master.convert('RGBA').resize((640, 50), Image.Resampling.LANCZOS)
+        save_portrait_platform(master.convert('RGBA'))
     save_ground_shadows(platform)
     save_platform_light(platform)
     save_reel_recess()
+    save_ambient_birds()
 
 
 if __name__ == '__main__':

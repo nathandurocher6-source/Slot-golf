@@ -19,7 +19,9 @@
 	import ResumeBet from './ResumeBet.svelte';
 	import Sound from './Sound.svelte';
 	import Background from './Background.svelte';
+	import AmbientBirds from './AmbientBirds.svelte';
 	import PracticeStage from './PracticeStage.svelte';
+	import PracticeViewport from './PracticeViewport.svelte';
 	import LoadingScreen from './LoadingScreen.svelte';
 	import BoardFrame from './BoardFrame.svelte';
 	import MultiplierGrid from './MultiplierGrid.svelte';
@@ -61,6 +63,7 @@
 </script>
 
 <App>
+	<PracticeViewport />
 	<EnableSound />
 	<EnableHotkey />
 	<EnableGameActor />
@@ -73,6 +76,7 @@
 		<LoadingScreen onloaded={() => (context.stateLayout.showLoadingScreen = false)} />
 	{:else}
 		<PracticeStage {lighting} />
+		<AmbientBirds sunset={sunset.current} />
 		<RoundPresentation bind:bonusCard bind:winVisible />
 		<ResumeBet />
 		<!--

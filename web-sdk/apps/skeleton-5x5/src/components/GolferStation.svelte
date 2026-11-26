@@ -4,6 +4,7 @@
 	import { getContext } from '../game/context';
 	import { PRACTICE_ART } from '../game/practiceLayout';
 	import type { PracticeLighting } from '../game/practiceLighting';
+	import { PRACTICE_PLANES } from '../game/practicePlanes';
 	import { studioTexture } from '../game/studioVisuals';
 
 	type Props = {
@@ -56,7 +57,7 @@
 	const scale = $derived(Math.max(0, Math.min(maxWidth / stationWidth, maxHeight / height)));
 </script>
 
-<Container {x} y={floor} {scale} zIndex={-3} label="GolferStation">
+<Container {x} y={floor} {scale} zIndex={PRACTICE_PLANES.props} label="GolferStation">
 	{@render shoeShadow(0.45, 0.953, 0.31, 'Rear shoe contact shadow')}
 	{@render shoeShadow(0.141, 0.99, 0.32, 'Front shoe contact shadow')}
 	<BaseSprite texture={golfer} label="Golfer at address" y={golferTop} tint={lighting.scenery} />
