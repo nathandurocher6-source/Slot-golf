@@ -1,149 +1,57 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Container, Rectangle, Text } from 'pixi-svelte';
-	import { FadeContainer } from 'components-pixi';
-	import { CanvasSizeRectangle, MainContainer } from 'components-layout';
-	import { Tween } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
-
+	import { OnHotkey } from 'components-shared';
+	import { BaseSprite, Container, PIXI } from 'pixi-svelte';
 	import { getContext } from '../game/context';
-	import TransitionAnimation from './TransitionAnimation.svelte';
-	import PressToContinue from './PressToContinue.svelte';
+	import { studioTexture, warmStudioFont } from '../game/studioVisuals';
+	import { prepareSymbolTextures, warmMultiplierLabels } from '../game/symbolTextureCache';
+	import ScreenSprite from './ScreenSprite.svelte';
+	import StudioText from './StudioText.svelte';
 
-	import { warmMultiplierLabels } from '../game/symbolTextureCache';
-
-	type Props = {
-		onloaded: () => void;
+	const { onloaded }: { onloaded: () => void } = $props();
+	const context = getContext();
+	const sizes = $derived(context.stateLayoutDerived.canvasSizes());
+	const assets = $derived(context.stateApp.loadedAssets);
+	const width = $derived(Math.min(520, sizes.width * 0.78, sizes.height * 0.86));
+	const logo = $derived(studioTexture(assets, 'logo'));
+	let ready = $state(false);
+	let transitioning = $state(false);
+	const enter = async () => {
+		if (!ready || transitioning) return;
+		transitioning = true;
+		await context.eventEmitter.broadcastAsync({ type: 'transition' });
+		onloaded();
 	};
 
-	const props: Props = $props();
-	const context = getContext();
-
-	let loadingType = $state<'start' | 'transition'>('start');
-	let isReady = $state(false);
-	const progress = new Tween(0);
-
 	onMount(async () => {
-		warmMultiplierLabels();
-		await progress.set(100, { duration: 450, easing: cubicOut });
-		isReady = true;
+		prepareSymbolTextures(assets);
+		const labels = warmMultiplierLabels();
+		warmStudioFont();
+		const textures = Object.values(assets).filter(
+			(asset): asset is PIXI.Texture => asset instanceof PIXI.Texture,
+		);
+		try {
+			await context.stateApp.pixiApplication?.renderer.prepare?.upload([...textures, ...labels]);
+		} finally {
+			ready = true;
+		}
 	});
-
-	const BAR_WIDTH = 280;
-	const BAR_HEIGHT = 10;
 </script>
 
-<!-- Logo & Loading Progress -->
-<FadeContainer show={loadingType === 'start'}>
-	<CanvasSizeRectangle backgroundColor={0x05130c} zIndex={100} />
-
-	<MainContainer>
-		<Container
-			x={context.stateLayoutDerived.mainLayout().width * 0.5}
-			y={context.stateLayoutDerived.mainLayout().height * 0.48}
-			zIndex={101}
-		>
-			<!-- Studio Logo / Title Badge -->
-			<Rectangle
-				y={-50}
-				width={190}
-				height={28}
-				borderRadius={8}
-				backgroundColor={0x0f2b1c}
-				borderColor={0x22c55e}
-				borderWidth={1.5}
-				anchor={0.5}
-			/>
-
-			<Text
-				y={-50}
-				text="STAKE ENGINE"
-				anchor={0.5}
-				style={{
-					fontFamily: 'system-ui, -apple-system, sans-serif',
-					fontSize: 12,
-					fontWeight: '900',
-					fill: 0x86efac,
-					letterSpacing: 2.5,
-				}}
-			/>
-
-			<!-- Game Main Title -->
-			<Text
-				y={-6}
-				text="BIRDIE BREAKOUT"
-				anchor={0.5}
-				style={{
-					fontFamily: 'system-ui, -apple-system, sans-serif',
-					fontSize: 30,
-					fontWeight: '900',
-					fill: 0xfacc15,
-					letterSpacing: 1.5,
-				}}
-			/>
-
-			<!-- Game Subtitle -->
-			<Text
-				y={26}
-				text="CHAMPIONSHIP GOLF 5X5"
-				anchor={0.5}
-				style={{
-					fontFamily: 'system-ui, -apple-system, sans-serif',
-					fontSize: 11,
-					fontWeight: '800',
-					fill: 0x4ade80,
-					letterSpacing: 3,
-				}}
-			/>
-
-			<!-- Progress Bar Background -->
-			<Rectangle
-				y={72}
-				width={BAR_WIDTH}
-				height={BAR_HEIGHT}
-				borderRadius={5}
-				backgroundColor={0x0d2417}
-				borderColor={0x1e4e33}
-				borderWidth={1.5}
-				anchor={0.5}
-			/>
-
-			<!-- Progress Bar Fill -->
-			{#if progress.current > 0}
-				<Rectangle
-					x={-BAR_WIDTH * 0.5 + (BAR_WIDTH * (progress.current / 100)) * 0.5}
-					y={72}
-					width={BAR_WIDTH * (progress.current / 100)}
-					height={BAR_HEIGHT - 2}
-					borderRadius={4}
-					backgroundColor={0x22c55e}
-					anchor={0.5}
-				/>
-			{/if}
-
-			<!-- Percentage Text -->
-			<Text
-				y={95}
-				text={isReady ? 'TEE OFF READY' : `${Math.round(progress.current)}%`}
-				anchor={0.5}
-				style={{
-					fontFamily: 'system-ui, -apple-system, sans-serif',
-					fontSize: 11,
-					fontWeight: '800',
-					fill: isReady ? 0xfacc15 : 0x86efac,
-					letterSpacing: 1.5,
-				}}
-			/>
-		</Container>
-	</MainContainer>
-</FadeContainer>
-
-<!-- Press to Continue Prompt -->
-<FadeContainer show={loadingType === 'start' && isReady}>
-	<PressToContinue onpress={() => (loadingType = 'transition')} />
-</FadeContainer>
-
-<!-- Transition between Loading Screen and Game -->
-<FadeContainer show={loadingType === 'transition'}>
-	<TransitionAnimation oncomplete={props.onloaded} />
-</FadeContainer>
+<ScreenSprite
+	tint={0x142419}
+	alpha={0.44}
+	zIndex={100}
+	onpress={ready && !transitioning ? enter : undefined}
+/>
+<Container x={sizes.width * 0.5} y={sizes.height * 0.47} zIndex={101} eventMode="none">
+	<BaseSprite texture={logo} anchor={0.5} {width} height={(width * logo.height) / logo.width} />
+	<StudioText
+		y={width * 0.35}
+		text={ready ? 'TAP TO PLAY' : 'LOADING'}
+		tint={0xffe994}
+		size={Math.min(18, width * 0.056)}
+	/>
+</Container>
+<OnHotkey hotkey="Space" disabled={!ready || transitioning} onpress={enter} />
+<OnHotkey hotkey="Enter" disabled={!ready || transitioning} onpress={enter} />

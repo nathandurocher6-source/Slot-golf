@@ -7,11 +7,13 @@
 </script>
 
 <script lang="ts">
-	import { Container, Rectangle, Text } from 'pixi-svelte';
+	import { BaseSprite, Container, PIXI } from 'pixi-svelte';
 
 	import BoardContainer from './BoardContainer.svelte';
 	import { getContext } from '../game/context';
 	import { SYMBOL_SIZE } from '../game/constants';
+
+	import StudioText from './StudioText.svelte';
 
 	const context = getContext();
 	const DEFAULT_GRID = [
@@ -39,39 +41,25 @@
 			{#each reel as multiplier, rowIndex}
 				{#if multiplier > 0}
 					<Container x={(reelIndex + 0.5) * SYMBOL_SIZE} y={(rowIndex + 0.5) * SYMBOL_SIZE}>
-						<!-- Highlight Outline -->
-						<Rectangle
+						<BaseSprite
+							texture={PIXI.Texture.WHITE}
+							tint={0xf0d584}
+							alpha={0.27}
 							width={SYMBOL_SIZE - 8}
 							height={SYMBOL_SIZE - 8}
-							borderRadius={12}
-							backgroundColor={0xffd700}
-							backgroundAlpha={0.15}
-							borderColor={0xffd700}
-							borderWidth={1.5}
 							anchor={0.5}
 						/>
 						{#if multiplier > 1}
-							<Rectangle
+							<BaseSprite
+								texture={PIXI.Texture.WHITE}
+								tint={0x183826}
+								alpha={0.96}
 								y={24}
 								width={48}
 								height={20}
-								borderRadius={5}
-								backgroundColor={0x0b131c}
-								borderColor={0xffd700}
-								borderWidth={1}
 								anchor={0.5}
 							/>
-							<Text
-								y={24}
-								anchor={0.5}
-								text={`x${multiplier}`}
-								style={{
-									fontFamily: 'system-ui, -apple-system, sans-serif',
-									fontSize: 11,
-									fontWeight: '800',
-									fill: 0xffe066,
-								}}
-							/>
+							<StudioText y={24} text={`×${multiplier}`} size={11} tint={0xffe066} />
 						{/if}
 					</Container>
 				{/if}

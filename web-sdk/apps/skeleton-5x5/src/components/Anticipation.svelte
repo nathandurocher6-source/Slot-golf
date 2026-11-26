@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Container, Rectangle } from 'pixi-svelte';
+	import { BaseSprite, Container, PIXI } from 'pixi-svelte';
 	import { Tween } from 'svelte/motion';
 	import { getContext } from '../game/context';
 	import type { Reel } from '../game/stateGame.svelte';
@@ -31,16 +31,13 @@
 	);
 </script>
 
-<Container x={reelX} y={boardLayout.y} scale={scale} alpha={alpha.current}>
-	<!-- Glowing Anticipation Column Frame -->
-	<Rectangle
-		width={SYMBOL_SIZE - 4}
+<Container x={reelX} y={boardLayout.y} {scale} alpha={alpha.current}>
+	<BaseSprite
+		texture={PIXI.Texture.WHITE}
+		tint={0xffd983}
+		alpha={0.32}
+		width={SYMBOL_SIZE * 0.96}
 		height={boardLayout.height}
-		borderRadius={12}
-		backgroundColor={0xff007f}
-		backgroundAlpha={0.18}
-		borderColor={0xff007f}
-		borderWidth={2}
 		anchor={0.5}
 	/>
 </Container>

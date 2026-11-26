@@ -5,43 +5,35 @@
 </script>
 
 <script lang="ts">
-	import { Container, BaseSprite, type LoadedSprite } from 'pixi-svelte';
+	import { BaseSprite, Container } from 'pixi-svelte';
+	import { GOLF_FRAME_PANEL } from '../game/golfAssets';
 	import { getContext } from '../game/context';
-
+	import { studioTexture } from '../game/studioVisuals';
+	const { tint }: { tint: number } = $props();
 	const context = getContext();
-	const boardLayout = $derived(context.stateGameDerived.boardLayout());
-	const frame = $derived(context.stateApp.loadedAssets['board-frame'] as LoadedSprite | undefined);
-	let glowActive = $state(false);
-
-	context.eventEmitter.subscribeOnMount({
-		boardFrameGlowShow: () => (glowActive = true),
-		boardFrameGlowHide: () => (glowActive = false),
-	});
-
-	// Align the printed columns inside the PNG with the five symbol columns.
-	const panelWidthRatio = 0.78;
-	const panelHeightRatio = 0.74;
-	const panelCenter = { x: 0.5, y: 0.527 };
+	const board = $derived(context.stateGameDerived.boardLayout());
+	const assets = $derived(context.stateApp.loadedAssets);
+	const frame = $derived(studioTexture(assets, 'board-frame'));
+	const recess = $derived(studioTexture(assets, 'practice-reel-recess'));
+	const width = $derived(board.width / GOLF_FRAME_PANEL.width);
+	const height = $derived(board.height / GOLF_FRAME_PANEL.height);
 </script>
 
-{#if frame}
-	<Container x={boardLayout.x} y={boardLayout.y} scale={boardLayout.scale ?? 1}>
-		<BaseSprite
-			texture={frame}
-			anchor={panelCenter}
-			width={boardLayout.width / panelWidthRatio}
-			height={boardLayout.height / panelHeightRatio}
-		/>
-		{#if glowActive}
-			<BaseSprite
-				texture={frame}
-				anchor={panelCenter}
-				width={boardLayout.width / panelWidthRatio}
-				height={boardLayout.height / panelHeightRatio}
-				tint={0xffdb79}
-				alpha={0.35}
-				blendMode="add"
-			/>
-		{/if}
-	</Container>
-{/if}
+<Container x={board.x} y={board.y} scale={board.scale}>
+	<BaseSprite
+		texture={frame}
+		label="Reel frame"
+		{tint}
+		anchor={GOLF_FRAME_PANEL.center}
+		{width}
+		{height}
+	/>
+	<BaseSprite
+		texture={recess}
+		label="Reel recess lighting"
+		{tint}
+		anchor={GOLF_FRAME_PANEL.center}
+		{width}
+		{height}
+	/>
+</Container>

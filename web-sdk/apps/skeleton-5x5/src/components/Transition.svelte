@@ -3,29 +3,29 @@
 </script>
 
 <script lang="ts">
-	import { waitForResolve } from 'utils-shared/wait';
-
+	import { onDestroy } from 'svelte';
 	import TransitionAnimation from './TransitionAnimation.svelte';
 	import { getContext } from '../game/context';
 
-	const context = getContext();
+	const { eventEmitter } = getContext();
+	let pending: { covered: () => void } | undefined = $state.raw();
 
-	let transitioning = $state(false);
-	let oncomplete = $state(() => {});
-
-	context.eventEmitter.subscribeOnMount({
-		transition: async () => {
-			transitioning = true;
-			await waitForResolve((resolve) => (oncomplete = resolve));
-		},
+	eventEmitter.subscribeOnMount({
+		transition: () =>
+			new Promise<void>((resolve) => {
+				pending?.covered();
+				pending = { covered: resolve };
+			}),
 	});
+
+	onDestroy(() => pending?.covered());
 </script>
 
-{#if transitioning}
+{#each pending ? [pending] : [] as transition (transition)}
 	<TransitionAnimation
+		oncovered={transition.covered}
 		oncomplete={() => {
-			oncomplete();
-			transitioning = false;
+			if (transition === pending) pending = undefined;
 		}}
 	/>
-{/if}
+{/each}

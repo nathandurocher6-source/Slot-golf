@@ -7,6 +7,8 @@ import { createGetWinLevelDataByWinLevelAlias } from 'utils-shared/winLevel';
 
 import type { GameType, RawSymbol, SymbolState } from './types';
 import { stateLayoutDerived } from './stateLayout';
+import { GOLF_FRAME_PANEL } from './golfAssets';
+import { getPracticeLayout } from './practiceLayout';
 import { winLevelMap } from './winLevelMap';
 import { eventEmitter } from './eventEmitter';
 import {
@@ -89,28 +91,16 @@ export const stateGame = $state({
 	scatterCounter: 0,
 });
 
+// Display-only projection. All reel coordinates continue to use the fixed cell size.
 const boardLayout = () => {
-	const layoutType = stateLayoutDerived.layoutType();
 	const main = stateLayoutDerived.mainLayout();
-
-	let yRatio = 0.4;
-	let scale = 0.85;
-
-	if (layoutType === 'portrait') {
-		yRatio = stateLayoutDerived.canvasSizes().width <= 600 ? 0.38 : 0.32;
-		scale = 0.95;
-	} else if (layoutType === 'tablet') {
-		yRatio = 0.42;
-		scale = 0.9;
-	} else if (layoutType === 'landscape') {
-		yRatio = stateLayoutDerived.canvasSizes().height <= 270 ? 0.39 : 0.43;
-		scale = 0.88;
-	}
+	const practice = getPracticeLayout(stateLayoutDerived.canvasSizes());
+	const mainScale = main.scale || 1;
 
 	return {
-		x: main.width * 0.5,
-		y: main.height * yRatio,
-		scale,
+		x: main.width * 0.5 + (practice.frameX - main.x) / mainScale,
+		y: main.height * 0.5 + (practice.frameY - main.y) / mainScale,
+		scale: (practice.frameWidth * GOLF_FRAME_PANEL.width) / (BOARD_SIZES.width * mainScale),
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 		...BOARD_SIZES,

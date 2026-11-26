@@ -1,0 +1,155 @@
+<Rive version="1" kind="fragment">
+    <Artboard defaultStateMachineId="0:7" styleId="0:5" width="940" height="1530" name="Golfer - elbow test" id="0:2">
+        <LayoutComponentStyle name="Artboard Style" id="0:5"/>
+
+        <Fill name="Background">
+            <SolidColor colorValue="FF282828" name="Color"/>
+        </Fill>
+
+        <!-- Positions are measured against the native 776 x 1449 game texture. -->
+        <RootBone x="100" y="40" name="Golfer root" id="0:20">
+            <RootBone x="237" y="684" name="Pelvis" id="0:21">
+                <RootBone y="-12" length="160" rotation="-1.570796327" name="Lumbar spine" id="0:22">
+                    <Bone length="175" name="Chest" id="0:23">
+                        <Bone length="113" name="Neck" id="0:24">
+                            <Bone length="143" name="Head" id="0:25"/>
+                        </Bone>
+                        <RootBone x="175" length="136.1800279" rotation="-1.519371119" name="Right clavicle" id="0:26">
+                            <Bone length="198.9497424" rotation="-1.321135765" name="Right upper arm" id="0:27">
+                                <Bone length="147.1665723" rotation="-0.743459993" name="Right forearm" id="0:28">
+                                    <IKConstraint targetId="0:40" parentBoneCount="1" name="Right wrist IK" id="0:29"/>
+                                    <Bone length="48.7647414" rotation="0.172525067" name="Right hand" id="0:30"/>
+                                </Bone>
+                            </Bone>
+                        </RootBone>
+                        <RootBone x="175" length="162.0493752" rotation="1.546109985" name="Left clavicle" id="0:31">
+                            <Bone length="212.0471646" rotation="1.157146109" name="Left upper arm" id="0:32">
+                                <Bone length="77.0259696" rotation="0.954262073" name="Left forearm" id="0:33">
+                                    <Bone length="106.7379970" rotation="-0.250495157" name="Left hand" id="0:34"/>
+                                </Bone>
+                            </Bone>
+                        </RootBone>
+                    </Bone>
+                </RootBone>
+                <RootBone x="-85" y="40" length="286.3424523" rotation="1.521884321" name="Right thigh" id="0:35">
+                    <Bone length="318.6361561" rotation="-0.102305684" name="Right shin" id="0:36">
+                        <Bone length="107.1680923" rotation="-0.548299522" name="Right foot" id="0:37"/>
+                    </Bone>
+                </RootBone>
+                <RootBone x="75" y="44" length="254.0177159" rotation="1.558985852" name="Left thigh" id="0:38">
+                    <Bone length="308.7652830" rotation="0.742218263" name="Left shin" id="0:39">
+                        <Bone length="181.2181006" rotation="-0.541670021" name="Left foot" id="0:41"/>
+                    </Bone>
+                </RootBone>
+            </RootBone>
+        </RootBone>
+
+        <Node x="205" y="693" name="Right wrist target" id="0:40"/>
+
+        <Image x="488" y="764.5" assetId="0:13" name="Birdie Breakout mascot PNG" id="0:14">
+            <!-- The central artwork follows the root. Only the sleeve, arm and pocket join blend into the right arm bones. -->
+            <Mesh name="Right elbow skin" id="0:50"
+                  triangleIndexBytes="DQ4SDRIMDg8SDxMSDxAUDxQTEBEUERUUDBILEhYLEhMXEhcWExQXFBgXFBUZFBkYCxYaCxoKFhcaFxsaFxgcFxwbGBkcGR0cChoJGh4JGhsfGh8eGxwfHCAfHB0hHCEgCR4iCSIIHh8iHyMiHyAkHyQjICEkISUkCCIHIiYHIiMnIicmIyQnJCgnJCUpJCkoByYqByoGJicqJysqJygsJywrKCksKS0sBioFKi4FKisvKi8uKywvLDAvLC0xLDEwBS4yBTIELi8yLzMyLzA0LzQzMDE0MTU0AA4NAA8OABAPABEQAAERARURARkVAR0ZASEdASUhASklAS0pATEtATUxAQI1AwQyAzIzAzM0AzQ1AzUC">
+                <ContourMeshVertex x="-388" y="-724.5" u="0" v="0"><Weight indices="1" values="255"/></ContourMeshVertex>
+                <ContourMeshVertex x="388" y="-724.5" u="1" v="0"><Weight indices="1" values="255"/></ContourMeshVertex>
+                <ContourMeshVertex x="388" y="724.5" u="1" v="1"><Weight indices="1" values="255"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="724.5" u="0" v="1"><Weight indices="1" values="255"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="6.5" u="0" v="0.504485852"><Weight indices="1" values="255"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-42.5" u="0" v="0.470669427"><Weight indices="769" values="16830"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-77.5" u="0" v="0.446514838"><Weight indices="769" values="51255"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-121.5" u="0" v="0.416149068"><Weight indices="3" values="255"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-169.5" u="0" v="0.383022774"><Weight indices="770" values="54570"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-205.5" u="0" v="0.358178054"><Weight indices="770" values="34680"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-244.5" u="0" v="0.331262940"><Weight indices="770" values="10200"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-295.5" u="0" v="0.296066253"><Weight indices="2" values="255"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-377.5" u="0" v="0.239475500"><Weight indices="513" values="19380"/></ContourMeshVertex>
+                <ContourMeshVertex x="-388" y="-438.5" u="0" v="0.197377502"><Weight indices="1" values="255"/></ContourMeshVertex>
+
+                <!-- Shoulder to cuff. -->
+                <MeshVertex x="-304" y="-438.5" u="0.108247423" v="0.197377502"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-279" y="-438.5" u="0.140463918" v="0.197377502"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-239" y="-438.5" u="0.192010309" v="0.197377502"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-204" y="-438.5" u="0.237113402" v="0.197377502"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-337" y="-377.5" u="0.065721649" v="0.239475500"><Weight indices="513" values="19380"/></MeshVertex>
+                <MeshVertex x="-301" y="-377.5" u="0.112113402" v="0.239475500"><Weight indices="513" values="24735"/></MeshVertex>
+                <MeshVertex x="-254" y="-377.5" u="0.172680412" v="0.239475500"><Weight indices="513" values="7395"/></MeshVertex>
+                <MeshVertex x="-214" y="-377.5" u="0.224226804" v="0.239475500"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-364" y="-295.5" u="0.030927835" v="0.296066253"><Weight indices="2" values="255"/></MeshVertex>
+                <MeshVertex x="-322" y="-295.5" u="0.085051546" v="0.296066253"><Weight indices="2" values="255"/></MeshVertex>
+                <MeshVertex x="-269" y="-295.5" u="0.153350515" v="0.296066253"><Weight indices="513" values="37995"/></MeshVertex>
+                <MeshVertex x="-225" y="-295.5" u="0.210051546" v="0.296066253"><Weight indices="1" values="255"/></MeshVertex>
+
+                <!-- Three edge rows across the elbow transfer weight from upper arm to forearm. -->
+                <MeshVertex x="-379" y="-244.5" u="0.011597938" v="0.331262940"><Weight indices="770" values="10200"/></MeshVertex>
+                <MeshVertex x="-338" y="-244.5" u="0.064432990" v="0.331262940"><Weight indices="770" values="10200"/></MeshVertex>
+                <MeshVertex x="-288" y="-244.5" u="0.128865979" v="0.331262940"><Weight indices="770" values="10200"/></MeshVertex>
+                <MeshVertex x="-242" y="-244.5" u="0.188144330" v="0.331262940"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-384" y="-205.5" u="0.005154639" v="0.358178054"><Weight indices="770" values="34680"/></MeshVertex>
+                <MeshVertex x="-345" y="-205.5" u="0.055412371" v="0.358178054"><Weight indices="770" values="34680"/></MeshVertex>
+                <MeshVertex x="-297" y="-205.5" u="0.117268041" v="0.358178054"><Weight indices="770" values="34680"/></MeshVertex>
+                <MeshVertex x="-243" y="-205.5" u="0.186855670" v="0.358178054"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-374" y="-169.5" u="0.018041237" v="0.383022774"><Weight indices="770" values="54570"/></MeshVertex>
+                <MeshVertex x="-341" y="-169.5" u="0.060567010" v="0.383022774"><Weight indices="770" values="54570"/></MeshVertex>
+                <MeshVertex x="-289" y="-169.5" u="0.127577320" v="0.383022774"><Weight indices="770" values="54570"/></MeshVertex>
+                <MeshVertex x="-240" y="-169.5" u="0.190721649" v="0.383022774"><Weight indices="1" values="255"/></MeshVertex>
+
+                <!-- The original hand stays tucked into the pocket in this range of motion. -->
+                <MeshVertex x="-354" y="-121.5" u="0.043814433" v="0.416149068"><Weight indices="3" values="255"/></MeshVertex>
+                <MeshVertex x="-321" y="-121.5" u="0.086340206" v="0.416149068"><Weight indices="3" values="255"/></MeshVertex>
+                <MeshVertex x="-283" y="-121.5" u="0.135309278" v="0.416149068"><Weight indices="769" values="57630"/></MeshVertex>
+                <MeshVertex x="-242" y="-121.5" u="0.188144330" v="0.416149068"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-329" y="-77.5" u="0.076030928" v="0.446514838"><Weight indices="769" values="51255"/></MeshVertex>
+                <MeshVertex x="-301" y="-77.5" u="0.112113402" v="0.446514838"><Weight indices="769" values="51255"/></MeshVertex>
+                <MeshVertex x="-262" y="-77.5" u="0.162371134" v="0.446514838"><Weight indices="769" values="36720"/></MeshVertex>
+                <MeshVertex x="-226" y="-77.5" u="0.208762887" v="0.446514838"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-314" y="-42.5" u="0.095360825" v="0.470669427"><Weight indices="769" values="16830"/></MeshVertex>
+                <MeshVertex x="-289" y="-42.5" u="0.127577320" v="0.470669427"><Weight indices="769" values="25755"/></MeshVertex>
+                <MeshVertex x="-264" y="-42.5" u="0.159793814" v="0.470669427"><Weight indices="769" values="9945"/></MeshVertex>
+                <MeshVertex x="-224" y="-42.5" u="0.211340206" v="0.470669427"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-299" y="6.5" u="0.114690722" v="0.504485852"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-285" y="6.5" u="0.132731959" v="0.504485852"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-264" y="6.5" u="0.159793814" v="0.504485852"><Weight indices="1" values="255"/></MeshVertex>
+                <MeshVertex x="-222" y="6.5" u="0.213917526" v="0.504485852"><Weight indices="1" values="255"/></MeshVertex>
+
+                <Skin tx="488" ty="764.5" name="Mascot bind pose" id="0:51">
+                    <Tendon boneId="0:20" tx="100" ty="40" name="Fixed artwork"/>
+                    <Tendon boneId="0:27" xx="-0.296557308" xy="0.955015059" yx="-0.955015059" yy="-0.296557308"
+                            tx="201" ty="370" name="Right upper arm"/>
+                    <Tendon boneId="0:28" xx="0.428086345" xy="0.903737839" yx="-0.903737839" yy="0.428086345"
+                            tx="142" ty="560" name="Right forearm"/>
+                </Skin>
+            </Mesh>
+        </Image>
+
+        <StateMachine name="State Machine 1" id="0:7">
+            <StateMachineLayer name="Layer 1" id="0:8">
+                <AnyState x="200" y="-120"/>
+                <ExitState x="400" y="-120"/>
+                <EntryState>
+                    <StateTransition stateToId="0:12"/>
+                </EntryState>
+                <AnimationState x="200" animationId="0:6" id="0:12"/>
+            </StateMachineLayer>
+        </StateMachine>
+
+        <LinearAnimation duration="120" fps="60" loopValue="pingPong" name="Right elbow flex" id="0:6">
+            <KeyedObject objectId="0:40">
+                <KeyedProperty propertyKey="13">
+                    <KeyFrameDouble frame="0" value="205" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.42" y1="0" x2="0.58" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble frame="120" value="211"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="14">
+                    <KeyFrameDouble frame="0" value="693" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.42" y1="0" x2="0.58" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble frame="120" value="668"/>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+    </Artboard>
+
+    <ImageAsset file="../../../web-sdk/apps/skeleton-5x5/static/assets/birdie-breakout/characters/mascot.png"
+                name="Birdie Breakout mascot" id="0:13"/>
+</Rive>

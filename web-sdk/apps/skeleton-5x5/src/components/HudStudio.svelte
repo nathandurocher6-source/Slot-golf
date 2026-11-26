@@ -6,17 +6,18 @@
 	import { numberToCurrencyString } from 'utils-shared/amount';
 	import { getContext } from '../game/context';
 	import { golfAssetUrl } from '../game/golfAssets';
-	import MascotGolfer from './MascotGolfer.svelte';
 
 	const context = getContext();
 
+	const { championship, presentation }: { championship: boolean; presentation: boolean } = $props();
 	let stopDisabled = $state(false);
 
 	const isIdle = $derived(context.stateXstateDerived.isIdle());
 	const canAffordBet = $derived(stateBetDerived.isBetCostAvailable());
 	const hasAutoSpin = $derived(stateBetDerived.hasAutoBetCounter());
 	const isTurbo = $derived(stateBet.isTurbo);
-	const isMuted = $derived(stateSound.volumeValueMaster === 0);
+	const soundOn = $derived(stateSound.volumeValueMaster > 0);
+	let lastSoundVolume = 50;
 
 	const activeMode = $derived(stateBetDerived.activeBetMode());
 	const isBoosterActive = $derived(activeMode?.type === 'activate');
@@ -50,13 +51,16 @@
 	const safeEffectiveBet = $derived(Number(effectiveBetAmount) || 0);
 	const betDisplay = $derived(numberToCurrencyString(safeEffectiveBet));
 
-	const biggestBet = $derived(stateConfig.betAmountOptions[stateConfig.betAmountOptions.length - 1]);
+	const biggestBet = $derived(
+		stateConfig.betAmountOptions[stateConfig.betAmountOptions.length - 1],
+	);
 	const smallestBet = $derived(stateConfig.betAmountOptions[0]);
 
 	const canIncrease = $derived(isIdle && stateBet.betAmount < biggestBet);
 	const canDecrease = $derived(isIdle && stateBet.betAmount > smallestBet);
 
 	const spinOrStop = () => {
+		if (presentation) return;
 		context.eventEmitter.broadcast({ type: 'soundPressBet' });
 
 		if (isIdle) {
@@ -119,9 +123,19 @@
 		}
 	};
 
-	const toggleSound = () => {
+	const openSettings = () => {
 		context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
-		stateSound.volumeValueMaster = stateSound.volumeValueMaster === 0 ? 50 : 0;
+		stateModal.modal = { name: 'settings' };
+	};
+
+	const toggleSound = () => {
+		if (soundOn) {
+			lastSoundVolume = stateSound.volumeValueMaster;
+			stateSound.volumeValueMaster = 0;
+		} else {
+			stateSound.volumeValueMaster = lastSoundVolume;
+			context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
+		}
 	};
 
 	context.eventEmitter.subscribeOnMount({
@@ -130,794 +144,646 @@
 	});
 </script>
 
-<OnHotkey hotkey="Space" disabled={isIdle && !canAffordBet} onpress={spinOrStop} />
-
-<!-- Cartoon Golfer Mascot on Fairway Flank (Desktop only) -->
-<MascotGolfer />
-
-<div class="studio-top-bar">
-	<div class="logo-badge-wrap">
-		<img class="golf-logo" src={golfAssetUrl('logo')} alt="Birdie Breakout" decoding="async" />
-		<div class="logo-subline">
-			<span class="subline-badge">96.00% RTP</span>
-			<span class="subline-tag">WINCAP 100 000X</span>
-		</div>
+<OnHotkey
+	hotkey="Space"
+	disabled={presentation || (isIdle && !canAffordBet)}
+	onpress={spinOrStop}
+/>
+<header class="studio-top-bar" class:championship>
+	<div class="studio-brand">
+		<img src={golfAssetUrl('logo')} class="golf-logo" alt="Birdie Breakout" draggable="false" />
+		<div class="logo-subline"><span>96.00% RTP</span><span>MAX WIN ×100,000</span></div>
 	</div>
-
-	<div class="top-studio">
-		<span class="studio-tag">STAKE ENGINE</span>
-	</div>
-</div>
-
-<!-- Dedicated Stake / Hacksaw Style BUY BONUS / BOOSTER side button -->
-{#if context.stateGame.gameType === 'basegame'}
-	<div class="side-bonus-container" class:booster-on={isBoosterActive}>
-		<button class="side-bonus-btn" onclick={openBuyBonus} title="Menu Achat de Bonus / Booster">
-			<!-- Golf Trophy / Cart Icon -->
-			<div class="bonus-icon-badge">
-				{#if isBoosterActive}
-					<!-- Caddie / Golf Cart Icon -->
-					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-						<rect x="3" y="11" width="18" height="7" rx="2" />
-						<path d="M6 11 L10 5 L17 5 L19 11" />
-						<circle cx="7" cy="18" r="2.5" />
-						<circle cx="17" cy="18" r="2.5" />
-					</svg>
-				{:else}
-					<!-- Golden Trophy Icon -->
-					<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-						<path d="M6 2H18V5C18 8.31 15.31 11 12 11C8.69 11 6 8.31 6 5V2ZM4 4C4 6.76 6.24 9 9 9V7C7.34 7 6 5.66 6 4H4ZM20 4H18C18 5.66 16.66 7 15 7V9C17.76 9 20 6.76 20 4ZM10 13.9C7.03 14.47 5 17.06 5 20.19V22H19V20.19C19 17.06 16.97 14.47 14 13.9V13C14.7 12.65 15.34 12.18 15.88 11.62C14.74 12.47 13.42 13 12 13C10.58 13 9.26 12.47 8.12 11.62C8.66 12.18 9.3 12.65 10 13V13.9Z"/>
-					</svg>
-				{/if}
-			</div>
-
-			<div class="bonus-text-wrap">
-				<span class="bonus-tag">{isBoosterActive ? 'ACTIVE' : 'BONUS'}</span>
-				<span class="bonus-title">{isBoosterActive ? 'CADDIE BOOST' : 'BUY BONUS'}</span>
-				<span class="bonus-subtitle">{isBoosterActive ? 'DESACTIVER 3X' : '100X MISE'}</span>
-			</div>
-		</button>
-	</div>
-{/if}
-
-<!-- Studio Obsidian Golf Bottom HUD Bar -->
-<div class="studio-hud-bar">
-	<!-- Left Section: Navigation / Rules & Sound -->
-	<div class="hud-left">
-		<button class="hud-icon-btn" onclick={openPayTable} title="Règles & Table des Gains" aria-label="Règles et table des gains">
-			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-				<circle cx="12" cy="12" r="10" />
-				<line x1="12" y1="16" x2="12" y2="12" />
-				<line x1="12" y1="8" x2="12.01" y2="8" />
-			</svg>
-		</button>
-		<button class="hud-icon-btn" onclick={toggleSound} title={isMuted ? 'Activer le son' : 'Couper le son'}>
-			{#if isMuted}
-				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-					<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-					<line x1="23" y1="9" x2="17" y2="15" />
-					<line x1="17" y1="9" x2="23" y2="15" />
-				</svg>
-			{:else}
-				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-					<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-					<path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
-				</svg>
-			{/if}
-		</button>
-	</div>
-
-	<!-- Center-Left Section: Balance & Win Meters -->
-	<div class="hud-meters">
-		<div class="meter-box">
-			<span class="meter-label">SOLDE</span>
-			<span class="meter-val">{balanceDisplay}</span>
-		</div>
-		<div class="meter-box" class:has-win={hasWin}>
-			<span class="meter-label">GAIN</span>
-			<span class="meter-val win-val">{winDisplay}</span>
-		</div>
-	</div>
-
-	<!-- Right Section: Bet Controls, Turbo, Spin & Autoplay -->
-	<div class="hud-actions">
-		<!-- Bet Selector -->
-		<div class="bet-selector">
-			<button class="bet-step-btn" disabled={!canDecrease} onclick={decreaseBet} title="Diminuer la mise">−</button>
-			<button class="bet-val-btn" onclick={() => (stateModal.modal = { name: 'betAmountMenu' })} title="Choisir la mise">
-				<span class="bet-label">MISE</span>
-				<span class="bet-number">{betDisplay}</span>
+	{#if !championship}
+		<div class="side-bonus-container" inert={presentation}>
+			<button class="side-bonus-btn" onclick={openBuyBonus}>
+				<strong>{isBoosterActive ? 'CADDIE BOOST' : 'BUY BONUS'}</strong>
+				<small>{isBoosterActive ? 'TURN OFF ×3' : '100× BET'}</small>
 			</button>
-			<button class="bet-step-btn" disabled={!canIncrease} onclick={increaseBet} title="Augmenter la mise">+</button>
 		</div>
+	{/if}
+</header>
 
-		<!-- Turbo Toggle Button -->
-		<button class="hud-mode-btn" class:active={isTurbo} onclick={toggleTurbo} title={isTurbo ? 'Mode Turbo Actif' : 'Activer le mode Turbo'}>
-			<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-				<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-			</svg>
-			<span class="mode-text">TURBO</span>
-		</button>
+<div class="studio-hud-bar" class:championship inert={presentation}>
+	<div class="hud-west">
+		<div class="hud-left">
+			<button class="hud-icon-btn" onclick={openSettings} aria-label="Menu and settings"
+				>MENU</button
+			>
+			<button class="hud-icon-btn" onclick={openPayTable} aria-label="Information and paytable"
+				>INFO</button
+			>
+		</div>
+		<div class="hud-meters">
+			<div class="meter-box">
+				<small>BALANCE</small><span
+					class="meter-val"
+					style:--digits={balanceDisplay.length}
+					title={balanceDisplay}>{balanceDisplay}</span
+				>
+			</div>
+			<div class="meter-box" class:has-win={hasWin}>
+				<small>WIN</small><span
+					class="meter-val win-val"
+					style:--digits={winDisplay.length}
+					title={winDisplay}>{winDisplay}</span
+				>
+			</div>
+		</div>
+	</div>
 
-		<!-- Autoplay Button -->
-		<button class="hud-mode-btn" class:active={hasAutoSpin} onclick={toggleAutoSpin} title={hasAutoSpin ? 'Arrêter les tours automatiques' : 'Tours Automatiques'}>
-			{#if hasAutoSpin}
-				<span class="auto-count">{stateBet.autoSpinsCounter}</span>
-				<span class="mode-text">STOP</span>
-			{:else}
-				<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-					<polyline points="23 4 23 10 17 10" />
-					<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-				</svg>
-				<span class="mode-text">AUTO</span>
-			{/if}
-		</button>
+	<button
+		class="spin-circle-btn"
+		disabled={isIdle ? !canAffordBet : stopDisabled}
+		onclick={spinOrStop}
+		aria-label={isIdle ? 'Spin' : 'Stop spin'}
+		title={isIdle ? 'Spin (Space)' : 'Stop spin'}
+	>
+		<img class="spin-sphere" src={golfAssetUrl('golf-ball')} alt="" draggable="false" />
+		<span class="spin-label" aria-hidden="true">{isIdle ? 'SPIN' : 'STOP'}</span>
+	</button>
 
-		<!-- Proeminent Circular SPIN Button (Dimpled Golf Championship Design) -->
+	<div class="hud-east">
+		<div class="bet-selector">
+			<button
+				class="bet-step-btn"
+				disabled={!canDecrease}
+				onclick={decreaseBet}
+				aria-label="Decrease bet">−</button
+			>
+			<button
+				class="bet-val-btn"
+				onclick={() => (stateModal.modal = { name: 'betAmountMenu' })}
+				aria-label="Choose bet"
+			>
+				<small>{betCostMultiplier === 1 ? 'BET' : 'TOTAL BET'}</small><strong>{betDisplay}</strong>
+			</button>
+			<button
+				class="bet-step-btn"
+				disabled={!canIncrease}
+				onclick={increaseBet}
+				aria-label="Increase bet">+</button
+			>
+		</div>
+		<div class="hud-modes">
+			<button
+				class="hud-mode-btn"
+				class:active={isTurbo}
+				onclick={toggleTurbo}
+				aria-pressed={isTurbo}
+				aria-label="Turbo">TURBO</button
+			>
+			<button
+				class="hud-mode-btn"
+				class:active={hasAutoSpin}
+				onclick={toggleAutoSpin}
+				aria-pressed={hasAutoSpin}
+				aria-label={hasAutoSpin ? 'Stop auto play' : 'Auto play'}
+				>{hasAutoSpin ? `STOP ${stateBet.autoSpinsCounter}` : 'AUTO PLAY'}</button
+			>
+		</div>
 		<button
-			class="spin-circle-btn"
-			class:stopping={!isIdle}
-			class:disabled={isIdle && !canAffordBet}
-			disabled={isIdle && !canAffordBet}
-			onclick={spinOrStop}
-			title={isIdle ? 'Lancer un tour (Espace)' : 'Stopper le tour'}
+			class="hud-mode-btn sound-btn"
+			class:muted={!soundOn}
+			onclick={toggleSound}
+			aria-pressed={soundOn}
+			aria-label="Sound"
+			title={soundOn ? 'Mute sound' : 'Unmute sound'}
 		>
-			<div class="spin-ring"></div>
-			{#if isIdle}
-				<svg class="spin-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-					<polyline points="23 4 23 10 17 10" />
-					<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-				</svg>
-			{:else}
-				<div class="stop-icon"></div>
-			{/if}
+			SOUND<small class="sound-state">{soundOn ? 'ON' : 'OFF'}</small>
 		</button>
 	</div>
 </div>
 
-<style lang="scss">
-	/* Side BUY BONUS / CADDIE BOOSTER Button */
-	.side-bonus-container {
-		position: fixed;
-		left: 24px;
-		top: min(36%, max(186px, calc(100% - 484px)));
-		transform: translateY(-50%);
-		z-index: 60;
-
-		@media (max-width: 1140px) {
-			left: 12px;
-			top: auto;
-			bottom: 84px;
-			transform: none;
-		}
-	}
-
-	.side-bonus-btn {
-		width: 126px;
-		height: 92px;
-		background: linear-gradient(145deg, #182619 0%, #0d1512 100%);
-		border: 2px solid #22c55e;
-		border-radius: 16px;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 18px rgba(34, 197, 94, 0.35);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 3px;
-		cursor: pointer;
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-		color: #ffffff;
-
-		&:hover {
-			transform: scale(1.05);
-			border-color: #4ade80;
-			box-shadow: 0 8px 30px rgba(34, 197, 94, 0.65);
-		}
-
-		&:active {
-			transform: scale(0.96);
-		}
-
-		@media (max-width: 1140px) {
-			width: auto;
-			height: 42px;
-			padding: 0 14px;
-			flex-direction: row;
-			gap: 8px;
-			border-radius: 20px;
-		}
-	}
-
-	.bonus-icon-badge {
-		color: #facc15;
-		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-	}
-
-	.side-bonus-container.booster-on .side-bonus-btn {
-		background: linear-gradient(145deg, #072619 0%, #061f14 100%);
-		border-color: #00ff88;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 255, 136, 0.5);
-	}
-
-	.side-bonus-container.booster-on .bonus-icon-badge {
-		color: #00ff88;
-	}
-
-	.bonus-text-wrap {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 2px;
-	}
-
-	.bonus-tag {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 8.5px;
-		font-weight: 900;
-		letter-spacing: 1.2px;
-		color: #052213;
-		background: #facc15;
-		padding: 2px 6px;
-		border-radius: 4px;
-	}
-
-	.side-bonus-container.booster-on .bonus-tag {
-		background: #00ff88;
-		color: #042211;
-	}
-
-	.bonus-title {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 12.5px;
-		font-weight: 900;
-		color: #ffffff;
-		letter-spacing: 0.8px;
-	}
-
-	.bonus-subtitle {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 10px;
-		font-weight: 800;
-		color: #86efac;
-		letter-spacing: 0.5px;
-	}
-
-	.side-bonus-container.booster-on .bonus-subtitle {
-		color: #69f0ae;
-	}
-
-	/* Studio Obsidian Golf Bottom Bar */
-	.studio-hud-bar {
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 72px;
-		background: linear-gradient(180deg, rgba(13, 21, 18, 0.98) 0%, rgba(6, 12, 10, 1) 100%);
-		border-top: 1.5px solid #1a3d2b;
-		box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.8), 0 -1px 8px rgba(34, 197, 94, 0.15);
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0 20px;
-		z-index: 55;
-		color: #ffffff;
-		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+<style>
+	.studio-hud-bar,
+	.studio-top-bar {
+		--hud-cream: #fff9eb;
+		--hud-gold: #f6cf73;
+		--hud-line: #b99446;
+		color: var(--hud-cream);
+		font-family: system-ui, sans-serif;
+		font-weight: 750;
 		user-select: none;
+	}
 
-		@media (max-width: 768px) {
-			height: 64px;
-			padding: 0 10px;
-		}
+	button {
+		font: inherit;
+		color: inherit;
+		cursor: pointer;
+		touch-action: manipulation;
+	}
+
+	button:focus-visible {
+		outline: 2px solid var(--hud-cream);
+		outline-offset: 3px;
+	}
+
+	button:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+
+	.studio-hud-bar {
+		--spin-size: clamp(80px, 6.6vw, 116px);
+		--control-height: clamp(46px, 3.5vw, 58px);
+		--hud-gap: clamp(6px, 0.74vw, 13px);
+		position: fixed;
+		inset-inline-start: max(5vw, env(safe-area-inset-left));
+		inset-inline-end: max(5vw, env(safe-area-inset-right));
+		bottom: max(14px, calc(env(safe-area-inset-bottom) + 5px));
+		box-sizing: border-box;
+		z-index: 55;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) var(--spin-size) minmax(0, 1fr);
+		gap: var(--hud-gap);
+		align-items: center;
+		min-height: clamp(76px, 5.5vw, 95px);
+		padding: 8px clamp(12px, 1.48vw, 24px);
+		border: 3px solid transparent;
+		border-radius: clamp(22px, 2.5vw, 43px);
+		background:
+			linear-gradient(180deg, #32634a, #194832 13%, #123d2b 45%, #0c2e20 84%, #1f4c32) padding-box,
+			linear-gradient(180deg, #fff2b0, #dca54f 26%, #895520 56%, #c99542 84%, #f3d174) border-box;
+		box-shadow:
+			inset 0 0 0 1px #634418,
+			inset 0 2px 0 #f9da8430,
+			0 2px 5px #02150e71;
+	}
+
+	.studio-hud-bar.championship {
+		--hud-line: #d1ac60;
+		--hud-gold: #ffdf8f;
+	}
+
+	.hud-west,
+	.hud-east,
+	.hud-left,
+	.hud-meters,
+	.hud-modes {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+		gap: var(--hud-gap);
 	}
 
 	.hud-left {
-		display: flex;
-		align-items: center;
-		gap: 8px;
+		flex: 0 0 auto;
 	}
 
-	.hud-icon-btn {
-		width: 38px;
-		height: 38px;
+	.hud-meters,
+	.hud-modes {
+		flex: 1;
+	}
+
+	.hud-modes .hud-mode-btn {
+		flex: 1 1 0;
+	}
+
+	.hud-east {
+		justify-content: flex-start;
+	}
+
+	.hud-icon-btn,
+	.hud-mode-btn,
+	.side-bonus-btn {
+		box-sizing: border-box;
+		border: 1px solid var(--hud-line);
+		background: linear-gradient(180deg, #2b583b, #163d28 37%, #11311f);
+		box-shadow:
+			inset 0 1px #f5d9922b,
+			inset 0 -1px #071d13;
+	}
+
+	.hud-icon-btn,
+	.hud-mode-btn {
+		min-width: clamp(44px, 4.4vw, 74px);
+		min-height: var(--control-height);
+		padding: 0 clamp(6px, 0.65vw, 11px);
 		border-radius: 10px;
-		background: #102118;
-		border: 1px solid #1c4430;
-		color: #86efac;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		transition: all 0.15s ease;
-
-		&:hover {
-			background: #173827;
-			color: #ffffff;
-			border-color: #22c55e;
-		}
-
-		&:active {
-			transform: scale(0.95);
-		}
+		font-size: clamp(10px, 0.9vw, 15px);
+		white-space: nowrap;
 	}
 
-	/* Balance & Win Encarts */
-	.hud-meters {
-		display: flex;
-		align-items: center;
-		gap: 12px;
+	.hud-mode-btn.active {
+		background: linear-gradient(155deg, #6c582b, #46381c);
+		border-color: #f3d78a;
+	}
 
-		@media (max-width: 600px) {
-			gap: 6px;
-		}
+	.sound-btn {
+		margin-inline-start: auto;
+		display: grid;
+		align-content: center;
+		gap: 2px;
+	}
+
+	.sound-state {
+		font-size: 9px;
+	}
+
+	.sound-btn.muted .sound-state {
+		color: #ffebbb;
 	}
 
 	.meter-box {
-		background: rgba(13, 29, 21, 0.85);
-		border: 1px solid #19432d;
-		border-radius: 10px;
-		padding: 5px 14px;
-		display: flex;
-		flex-direction: column;
-		min-width: 100px;
-
-		@media (max-width: 600px) {
-			padding: 4px 8px;
-			min-width: 80px;
-		}
-
-		&.has-win {
-			border-color: #facc15;
-			background: rgba(250, 204, 21, 0.1);
-			box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
-		}
+		display: grid;
+		align-content: center;
+		gap: 2px;
+		box-sizing: border-box;
+		min-height: var(--control-height);
+		min-width: 0;
+		flex: 1 1 0;
+		padding: 3px clamp(5px, 1vw, 16px);
+		border-radius: 9px;
+		border: 1px solid #81703e80;
+		background: linear-gradient(#092e20, #123a27);
+		box-shadow: inset 0 1px 2px #061e15;
+		container-type: inline-size;
 	}
 
-	.meter-label {
-		font-size: 9.5px;
-		font-weight: 700;
-		color: #86efac;
-		letter-spacing: 1px;
+	.meter-box:first-child {
+		flex-grow: 1.22;
+	}
+
+	small {
+		color: var(--hud-gold);
+		font-size: clamp(9px, 0.86vw, 14px);
+		line-height: 1.15;
+		letter-spacing: 0.045em;
 	}
 
 	.meter-val {
-		font-size: 14.5px;
-		font-weight: 800;
-		color: #ffffff;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		font-size: 15px;
+		font-size: clamp(8px, calc(153cqi / var(--digits)), 23px);
 		font-variant-numeric: tabular-nums;
-
-		@media (max-width: 600px) {
-			font-size: 13px;
-		}
+		line-height: 1.13;
 	}
 
-	.win-val {
-		color: #facc15;
-		text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
-	}
-
-	/* Action Block */
-	.hud-actions {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-
-		@media (max-width: 768px) {
-			gap: 6px;
-		}
+	.has-win .win-val {
+		color: #ffdfa1;
 	}
 
 	.bet-selector {
 		display: flex;
+		flex: 0 0 auto;
 		align-items: center;
-		background: rgba(13, 29, 21, 0.85);
-		border: 1px solid #19432d;
-		border-radius: 10px;
-		padding: 2px;
+		gap: clamp(2px, 0.36vw, 6px);
 	}
 
+	.bet-val-btn,
 	.bet-step-btn {
-		width: 32px;
-		height: 34px;
-		border-radius: 8px;
+		border: 0;
 		background: transparent;
-		border: none;
-		color: #86efac;
-		font-size: 18px;
-		font-weight: bold;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: all 0.15s ease;
-
-		&:hover:not(:disabled) {
-			background: #173827;
-			color: #ffffff;
-		}
-
-		&:disabled {
-			opacity: 0.3;
-			cursor: not-allowed;
-		}
 	}
 
 	.bet-val-btn {
-		background: transparent;
-		border: none;
-		padding: 2px 10px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		cursor: pointer;
-		min-width: 70px;
+		display: grid;
+		align-content: center;
+		gap: 2px;
+		min-width: clamp(52px, 5vw, 90px);
+		min-height: var(--control-height);
+		padding: 0 4px;
 	}
 
-	.bet-label {
-		font-size: 9px;
-		font-weight: 700;
-		color: #86efac;
-		letter-spacing: 1px;
-	}
-
-	.bet-number {
-		font-size: 14px;
-		font-weight: 800;
-		color: #ffffff;
+	.bet-val-btn strong {
+		font-size: clamp(12px, 1.3vw, 22px);
 		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
 	}
 
-	.hud-mode-btn {
-		height: 38px;
-		padding: 0 10px;
-		border-radius: 10px;
-		background: #102118;
-		border: 1px solid #1c4430;
-		color: #86efac;
-		display: flex;
-		align-items: center;
-		gap: 5px;
-		cursor: pointer;
-		transition: all 0.15s ease;
-
-		&:hover {
-			border-color: #22c55e;
-			color: #ffffff;
-		}
-
-		&.active {
-			background: rgba(250, 204, 21, 0.2);
-			border-color: #facc15;
-			color: #facc15;
-			box-shadow: 0 0 14px rgba(250, 204, 21, 0.4);
-		}
-
-		@media (max-width: 600px) {
-			padding: 0 6px;
-			.mode-text {
-				display: none;
-			}
-		}
+	.bet-step-btn {
+		width: clamp(34px, 3vw, 49px);
+		height: clamp(34px, 3vw, 49px);
+		padding: 0;
+		border: 1px solid #9f8147;
+		border-radius: 50%;
+		background: linear-gradient(#305e40, #173c28 65%, #10301f);
+		box-shadow: inset 0 1px #ffdd9144;
+		font-size: clamp(18px, 2vw, 32px);
+		line-height: 1;
 	}
 
-	.mode-text {
-		font-size: 10.5px;
-		font-weight: 800;
-		letter-spacing: 0.8px;
-	}
-
-	.auto-count {
-		font-size: 12px;
-		font-weight: 900;
-		color: #38bdf8;
-	}
-
-	/* Proeminent Circular Spin Button (Golf Championship Green & Gold) */
 	.spin-circle-btn {
 		position: relative;
-		width: 58px;
-		height: 58px;
+		isolation: isolate;
+		box-sizing: border-box;
+		display: grid;
+		place-items: center;
+		width: var(--spin-size);
+		aspect-ratio: 1;
+		margin-block: -17px;
+		padding: 0;
+		border: 1px solid #684526;
 		border-radius: 50%;
-		background: radial-gradient(circle at 35% 35%, #22c55e, #15803d);
-		border: 2.5px solid #86efac;
-		color: #052213;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		box-shadow: 0 0 22px rgba(34, 197, 94, 0.5), 0 4px 12px rgba(0, 0, 0, 0.6);
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		background: linear-gradient(145deg, #fff0b5 10%, #d39c42 42%, #ebc264 72%, #b37b2e);
+	}
 
-		&:hover:not(:disabled) {
-			transform: scale(1.06);
-			box-shadow: 0 0 28px rgba(34, 197, 94, 0.8), 0 6px 16px rgba(0, 0, 0, 0.7);
-			border-color: #bbf7d0;
+	.spin-circle-btn::before {
+		content: '';
+		position: absolute;
+		inset: 5%;
+		z-index: -1;
+		border: 1px solid #74521e;
+		border-radius: inherit;
+		background: radial-gradient(circle at 40% 29%, #24523d, #082a19 77%);
+	}
+
+	.spin-sphere {
+		display: block;
+		width: 81%;
+		height: 81%;
+		object-fit: contain;
+		pointer-events: none;
+	}
+
+	.spin-label {
+		position: absolute;
+		bottom: 1.5%;
+		left: 50%;
+		transform: translateX(-50%);
+		padding: 0 6px;
+		border: 1px solid #c59441;
+		border-radius: 5px;
+		background: #143b24;
+		color: #ffdd81;
+		font-size: clamp(8px, 0.78vw, 13px);
+		line-height: 1.3;
+		letter-spacing: 0.08em;
+	}
+
+	.spin-circle-btn:active:not(:disabled) {
+		box-shadow: inset 0 0 0 2px #f9e2a3;
+	}
+
+	@media (hover: hover) {
+		button:hover:not(:disabled) {
+			border-color: #ffe1a0;
 		}
-
-		&:active:not(:disabled) {
-			transform: scale(0.95);
-		}
-
-		&.stopping {
-			background: radial-gradient(circle at 35% 35%, #ef4444, #b91c1c);
-			border-color: #fca5a5;
-			color: #ffffff;
-			box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
-		}
-
-		&.disabled {
-			background: #17261e;
-			border-color: #294435;
-			color: #4b6656;
-			box-shadow: none;
-			cursor: not-allowed;
-		}
-
-		@media (max-width: 600px) {
-			width: 50px;
-			height: 50px;
+		.spin-circle-btn:hover:not(:disabled) {
+			border-color: #ffe1a0;
 		}
 	}
 
-	.spin-icon {
-		stroke: #052213;
-	}
-
-	.stop-icon {
-		width: 18px;
-		height: 18px;
-		background: #ffffff;
-		border-radius: 4px;
-	}
-
-	/* Top Bar */
 	.studio-top-bar {
 		position: fixed;
-		top: 14px;
-		left: 20px;
-		right: 20px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 8px;
-		pointer-events: none;
+		left: max(clamp(9px, 2.6vw, 50px), env(safe-area-inset-left));
+		top: max(12px, env(safe-area-inset-top));
 		z-index: 50;
-		user-select: none;
-
-		@media (max-width: 600px) {
-			top: 8px;
-			left: 10px;
-			right: 10px;
-		}
+		display: grid;
+		justify-items: start;
+		gap: clamp(8px, 0.8vw, 10px);
+		pointer-events: none;
 	}
 
-	.logo-badge-wrap {
+	.studio-brand {
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		min-width: 0;
-		background: rgba(13, 26, 19, 0.96);
-		border: 1.5px solid #1e4d35;
-		border-radius: 16px;
-		padding: 4px 10px 4px 6px;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-
-		@media (max-width: 400px) {
-			gap: 6px;
-			padding-inline: 6px;
-		}
+		gap: clamp(6px, 0.7vw, 13px);
 	}
 
 	.golf-logo {
 		display: block;
-		width: clamp(95px, 16.8vw, 157px);
-		min-width: 0;
+		width: clamp(120px, 13vw, 210px);
 		height: auto;
 	}
 
 	.logo-subline {
-		display: flex;
-		flex-direction: column;
-		flex-shrink: 0;
-		align-items: flex-start;
-		gap: 4px;
+		display: grid;
+		gap: 5px;
+	}
+
+	.logo-subline span {
+		padding: 4px 8px;
+		border: 1px solid #d7a743;
+		border-radius: 100px;
+		background: #0e3624;
+		font-size: clamp(8px, 0.82vw, 13px);
+		line-height: 1.2;
+		text-align: center;
 		white-space: nowrap;
 	}
 
-	.subline-badge {
-		background: #14532d;
-		color: #86efac;
-		font-size: 8.5px;
-		font-weight: 800;
-		letter-spacing: 1px;
-		padding: 1px 5px;
-		border-radius: 4px;
+	.logo-subline span:last-child {
+		color: var(--hud-gold);
 	}
 
-	.subline-tag {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 9.5px;
-		font-weight: 800;
-		color: #facc15;
-		letter-spacing: 1.2px;
-
-		@media (max-width: 400px) {
-			font-size: 8.5px;
-			letter-spacing: 0.7px;
-		}
+	.side-bonus-container:not([inert]) {
+		pointer-events: auto;
 	}
 
-	.top-studio {
-		flex-shrink: 0;
-		white-space: nowrap;
-		background: rgba(13, 26, 19, 0.85);
-		border: 1px solid #1e4d35;
-		border-radius: 10px;
-		padding: 6px 12px;
-
-		@media (max-width: 400px) {
-			padding-inline: 7px;
-		}
+	.side-bonus-btn {
+		display: grid;
+		align-content: center;
+		gap: 3px;
+		min-width: clamp(100px, 9.5vw, 174px);
+		min-height: clamp(44px, 3.3vw, 48px);
+		padding: 5px 13px;
+		border-width: 2px;
+		border-radius: 13px;
 	}
 
-	.studio-tag {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 11px;
-		font-weight: 800;
-		color: #86efac;
-		letter-spacing: 2px;
-
-		@media (max-width: 400px) {
-			font-size: 9px;
-			letter-spacing: 0.8px;
-		}
+	.side-bonus-btn strong {
+		font-size: clamp(12px, 1.28vw, 21px);
+		line-height: 1.1;
 	}
 
-	@media (max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape) {
+	@media (max-width: 1080px) {
 		.studio-hud-bar {
-			box-sizing: content-box;
-			padding-left: max(8px, env(safe-area-inset-left));
-			padding-right: max(8px, env(safe-area-inset-right));
-			padding-bottom: env(safe-area-inset-bottom);
-			touch-action: manipulation;
+			--spin-size: 76px;
+			inset-inline-start: max(2vw, env(safe-area-inset-left));
+			inset-inline-end: max(2vw, env(safe-area-inset-right));
 		}
+	}
 
-		.studio-top-bar {
-			top: max(8px, env(safe-area-inset-top));
-			left: max(10px, env(safe-area-inset-left));
-			right: max(10px, env(safe-area-inset-right));
-		}
-
-		.side-bonus-container {
-			left: max(12px, env(safe-area-inset-left));
-		}
-
-		.side-bonus-btn {
-			height: 44px;
-		}
-
-		.bonus-tag {
-			display: none;
-		}
-
-		.hud-left,
-		.hud-meters {
-			gap: 4px;
-		}
-
-		.hud-actions {
-			flex-shrink: 0;
-			gap: 4px;
+	@media (orientation: landscape) and (max-height: 560px) {
+		.studio-hud-bar {
+			--spin-size: 57px;
+			--control-height: 42px;
+			--hud-gap: 4px;
+			inset-inline-start: max(6px, env(safe-area-inset-left));
+			inset-inline-end: max(6px, env(safe-area-inset-right));
+			bottom: max(5px, env(safe-area-inset-bottom));
+			grid-template-columns: minmax(0, 0.97fr) var(--spin-size) minmax(0, 1.03fr);
+			min-height: 58px;
+			padding: 5px 8px;
+			border-radius: 22px;
 		}
 
 		.hud-icon-btn,
-		.hud-mode-btn,
+		.hud-mode-btn {
+			min-width: 37px;
+			padding-inline: 4px;
+			border-radius: 8px;
+			font-size: 9px;
+		}
+
+		.hud-mode-btn {
+			white-space: normal;
+		}
+
+		.hud-modes .hud-mode-btn {
+			width: 41px;
+		}
+
+		.bet-selector {
+			gap: 2px;
+		}
+
 		.bet-step-btn {
-			width: 44px;
-			height: 44px;
-			padding: 0;
-			justify-content: center;
+			width: 28px;
+			height: 38px;
 		}
 
 		.bet-val-btn {
-			min-width: 52px;
-			min-height: 44px;
-			padding: 2px 4px;
-			justify-content: center;
+			min-width: 48px;
 		}
 
 		.meter-box {
-			flex: 1 1 0;
-			min-width: 0;
-			padding: 4px 6px;
-		}
-
-		.meter-val {
-			font-size: 13px;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-
-		.golf-logo {
-			width: 88px;
-		}
-	}
-
-	@media (max-width: 600px) and (orientation: portrait) {
-		.studio-hud-bar {
-			display: grid;
-			grid-template-columns: auto minmax(0, 1fr);
-			grid-template-areas: 'tools meters' 'actions actions';
-			gap: 4px 8px;
-			height: auto;
-			padding-top: 5px;
-			padding-bottom: calc(5px + env(safe-area-inset-bottom));
-		}
-
-		.hud-left {
-			grid-area: tools;
-		}
-
-		.hud-meters {
-			grid-area: meters;
-		}
-
-		.hud-actions {
-			grid-area: actions;
-			justify-content: space-between;
-		}
-
-		.side-bonus-container {
-			bottom: calc(118px + env(safe-area-inset-bottom));
-		}
-	}
-
-	@media (max-height: 500px) and (orientation: landscape) {
-		.studio-hud-bar {
-			height: 52px;
-			gap: 6px;
-		}
-
-		.hud-meters {
-			flex: 0 1 235px;
-			min-width: 0;
-		}
-
-		.meter-box {
-			flex-basis: auto;
 			padding-inline: 4px;
 		}
 
-		.meter-val {
-			font-size: 12px;
-		}
-
-		.hud-mode-btn .mode-text {
-			display: none;
-		}
-
 		.spin-circle-btn {
-			width: 50px;
-			height: 50px;
+			margin-block: -6px;
 		}
 
-		.side-bonus-container {
-			bottom: calc(60px + env(safe-area-inset-bottom));
-		}
-
-		.logo-badge-wrap {
-			gap: 6px;
-			padding: 3px 8px 3px 6px;
+		.studio-top-bar {
+			left: max(7px, env(safe-area-inset-left));
+			top: max(6px, env(safe-area-inset-top));
+			gap: 4px;
 		}
 
 		.golf-logo {
-			width: 54px;
+			width: clamp(63px, 12.5vw, 112px);
 		}
 
-		.subline-tag {
-			font-size: 8.5px;
-			letter-spacing: 0.7px;
+		.logo-subline {
+			gap: 3px;
+		}
+
+		.logo-subline span {
+			padding: 2px 4px;
+			font-size: 7px;
+		}
+
+		.side-bonus-btn {
+			min-width: 72px;
+			min-height: 34px;
+			padding: 3px 6px;
+			border-width: 1px;
+			border-radius: 7px;
+		}
+
+		.side-bonus-btn strong,
+		.side-bonus-btn small {
+			font-size: 8px;
+			white-space: nowrap;
+		}
+	}
+
+	@media (orientation: portrait) and (max-width: 620px) {
+		.studio-hud-bar {
+			--spin-size: 58px;
+			--control-height: 44px;
+			--hud-gap: 5px;
+			inset-inline-start: max(6px, env(safe-area-inset-left));
+			inset-inline-end: max(6px, env(safe-area-inset-right));
+			bottom: max(6px, env(safe-area-inset-bottom));
+			grid-template-columns: minmax(101px, 1.2fr) var(--spin-size) minmax(0, 1fr) 47px;
+			grid-template-areas: 'west west west sound' 'stake spin modes modes';
+			padding: 6px;
+			border-radius: 18px;
+		}
+
+		.hud-west {
+			grid-area: west;
+		}
+
+		.hud-east {
+			display: contents;
+		}
+
+		.bet-selector {
+			grid-area: stake;
+			justify-self: start;
+		}
+
+		.hud-modes {
+			grid-area: modes;
+			justify-content: flex-end;
+		}
+
+		.hud-modes .hud-mode-btn {
+			flex: 0 1 auto;
+		}
+
+		.hud-icon-btn,
+		.hud-mode-btn {
+			min-width: 40px;
+			padding-inline: 5px;
+			border-radius: 8px;
+			font-size: 9px;
+		}
+
+		.hud-mode-btn {
+			min-width: 44px;
+			white-space: normal;
+		}
+
+		.sound-btn {
+			grid-area: sound;
+			width: 100%;
+			margin: 0;
+		}
+
+		.bet-step-btn {
+			width: 28px;
+			height: var(--control-height);
+		}
+
+		.bet-selector {
+			gap: 2px;
+		}
+
+		.bet-val-btn {
+			min-width: 47px;
+			padding: 0 3px;
+		}
+
+		.spin-circle-btn {
+			grid-area: 2 / 1 / 3 / -1;
+			justify-self: center;
+			margin-block: 0;
+		}
+
+		.studio-top-bar {
+			left: max(7px, env(safe-area-inset-left));
+			top: max(6px, env(safe-area-inset-top));
+			gap: 5px;
+		}
+
+		.golf-logo {
+			width: clamp(88px, 26vw, 142px);
+		}
+
+		.logo-subline span {
+			padding: 3px 6px;
+			font-size: 8px;
+		}
+
+		.side-bonus-btn {
+			min-width: 80px;
+			min-height: 38px;
+			padding: 3px 8px;
+			border-width: 1px;
+			border-radius: 8px;
+		}
+
+		.side-bonus-btn strong,
+		.side-bonus-btn small {
+			font-size: 9px;
 		}
 	}
 </style>

@@ -15,11 +15,14 @@
 <SymbolWrap
 	x={getSymbolX(props.reelIndex)}
 	y={props.tumbleSymbol.symbolY.current}
-	animating={props.tumbleSymbol.symbolState === 'explosion' || props.tumbleSymbol.symbolState === 'win'}
+	animating={props.tumbleSymbol.symbolState === 'explosion' ||
+		props.tumbleSymbol.symbolState === 'win'}
 >
 	<Symbol
 		state={props.tumbleSymbol.symbolState}
 		rawSymbol={props.tumbleSymbol.rawSymbol}
+		travel={props.tumbleSymbol.symbolY}
+		motionSeed={props.tumbleSymbol.id ?? props.reelIndex}
 		oncomplete={props.tumbleSymbol.oncomplete}
 	/>
 </SymbolWrap>

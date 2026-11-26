@@ -2,11 +2,14 @@
 	import { initMockRgs } from '../game/mockRgs';
 	initMockRgs();
 
-	import { type Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import { GlobalStyle } from 'components-ui-html';
-	import { Authenticate, LoaderStakeEngine, LoaderExample, LoadI18n } from 'components-shared';
+	import { Authenticate } from 'components-shared';
+	import { stateI18nDerived } from 'state-shared';
 	import Game from '../components/Game.svelte';
 	import { setContext } from '../game/context';
+	import { stateApp } from '../game/stateApp';
+	import { golfAssetUrl } from '../game/golfAssets';
 
 	import messagesMap from '../i18n/messagesMap';
 
@@ -14,23 +17,68 @@
 
 	const props: Props = $props();
 
-	let showYourLoader = $state(false);
-
 	setContext();
+
+	let englishReady = $state(false);
+	onMount(() => {
+		stateI18nDerived.init('en', messagesMap.en);
+		englishReady = true;
+	});
 </script>
 
 <GlobalStyle>
 	<Authenticate>
-		<LoadI18n {messagesMap}>
+		{#if englishReady}
 			<Game />
-		</LoadI18n>
+		{/if}
 	</Authenticate>
 </GlobalStyle>
 
-<LoaderStakeEngine src="./stake-engine-loader.gif" oncomplete={() => (showYourLoader = true)} />
-
-{#if showYourLoader}
-	<LoaderExample src="./loader.gif" />
+{#if !stateApp.loaded}
+	<div class="clubhouse-loading" role="status" aria-label="Loading Birdie Breakout">
+		<img src={golfAssetUrl('logo')} alt="Birdie Breakout" />
+		<span></span>
+	</div>
 {/if}
 
 {@render props.children()}
+
+<style>
+	.clubhouse-loading {
+		position: fixed;
+		inset: 0;
+		display: grid;
+		justify-items: center;
+		align-content: center;
+		gap: 18px;
+		background: radial-gradient(ellipse at 50% 45%, #396037, #14291e 67%, #101b15);
+		z-index: 54;
+		pointer-events: none;
+	}
+	.clubhouse-loading img {
+		width: min(72vw, 420px, 93vh);
+	}
+	.clubhouse-loading span {
+		width: 66px;
+		height: 4px;
+		border-radius: 8px;
+		background: #ffd465;
+		transform-origin: left;
+		animation: loading 1s ease-in-out infinite alternate;
+	}
+	@keyframes loading {
+		from {
+			transform: scaleX(0.26);
+			opacity: 0.55;
+		}
+		to {
+			transform: scaleX(1);
+			opacity: 1;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.clubhouse-loading span {
+			animation: none;
+		}
+	}
+</style>

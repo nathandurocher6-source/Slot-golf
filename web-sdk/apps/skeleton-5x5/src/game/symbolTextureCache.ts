@@ -5,29 +5,19 @@ import type { SymbolName } from './types';
 export const getSymbolTexture = (assets: LoadedAssets, name: SymbolName) =>
 	(assets[GOLF_SYMBOL_ART[name]] as LoadedSprite | undefined) ?? PIXI.Texture.EMPTY;
 
+export function prepareSymbolTextures(assets: LoadedAssets) {
+	for (const name of Object.values(GOLF_SYMBOL_ART)) {
+		const texture = assets[name];
+		if (texture instanceof PIXI.Texture) {
+			// Static 512px tiles get mipmaps on their first upload, for smooth minification
+			// as they rotate in small cells. All sprites of each symbol share the source.
+			texture.source.scaleMode = 'linear';
+			texture.source.autoGenerateMipmaps = true;
+		}
+	}
+}
+
 const multiplierLabels = new Map<number, PIXI.Texture>();
-let multiplierAura: PIXI.Texture | undefined;
-
-export const getMultiplierAuraTexture = (): PIXI.Texture => {
-	if (multiplierAura) return multiplierAura;
-	if (typeof document === 'undefined') return PIXI.Texture.EMPTY;
-
-	const canvas = document.createElement('canvas');
-	canvas.width = 128;
-	canvas.height = 128;
-	const ctx = canvas.getContext('2d');
-	if (!ctx) return PIXI.Texture.EMPTY;
-
-	const aura = ctx.createRadialGradient(64, 64, 36, 64, 64, 64);
-	aura.addColorStop(0, 'rgba(255, 255, 255, 0.7)');
-	aura.addColorStop(0.5, 'rgba(255, 255, 255, 0.45)');
-	aura.addColorStop(1, 'rgba(255, 255, 255, 0)');
-	ctx.fillStyle = aura;
-	ctx.fillRect(0, 0, 128, 128);
-
-	multiplierAura = PIXI.Texture.from(canvas);
-	return multiplierAura;
-};
 
 export const getMultiplierLabelTexture = (value: number): PIXI.Texture => {
 	const cached = multiplierLabels.get(value);
@@ -57,9 +47,5 @@ export const getMultiplierLabelTexture = (value: number): PIXI.Texture => {
 	return texture;
 };
 
-export const warmMultiplierLabels = () => {
-	getMultiplierAuraTexture();
-	for (const value of [2, 3, 4, 5, 10, 15, 25, 50, 100, 250, 500, 1000]) {
-		getMultiplierLabelTexture(value);
-	}
-};
+export const warmMultiplierLabels = () =>
+	[2, 3, 4, 5, 10, 15, 25, 50, 100, 250, 500, 1000].map(getMultiplierLabelTexture);

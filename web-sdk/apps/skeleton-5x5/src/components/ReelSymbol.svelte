@@ -20,6 +20,8 @@
 	<Symbol
 		state={props.reelSymbol.symbolState}
 		rawSymbol={props.reelSymbol.rawSymbol}
+		travel={props.reelSymbol.symbolY}
+		motionSeed={props.reelIndex * 11 + props.reelSymbol.symbolIndexOfBoard}
 		oncomplete={() => {
 			if (props.reelSymbol.symbolState === 'win') props.reelSymbol.oncomplete();
 			if (props.reelSymbol.symbolState === 'land') props.reelSymbol.symbolState = 'static';

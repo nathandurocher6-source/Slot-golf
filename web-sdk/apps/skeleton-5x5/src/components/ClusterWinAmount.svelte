@@ -13,18 +13,18 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { Tween } from 'svelte/motion';
 	import { backOut, cubicOut } from 'svelte/easing';
-	import { Text, Container, Rectangle } from 'pixi-svelte';
+	import { BaseSprite, Container, PIXI } from 'pixi-svelte';
+	import StudioText from './StudioText.svelte';
 	import { stateBetDerived } from 'state-shared';
 	import { SECOND } from 'constants-shared/time';
 	import { FadeContainer } from 'components-pixi';
 	import { bookEventAmountToCurrencyString } from 'utils-shared/amount';
 	import { SYMBOL_SIZE } from '../game/constants';
-	import { getContext } from '../game/context';
+	import { isCelebrationWin } from '../game/studioVisuals';
 
 	type Props = { win: Win };
 
 	const props: Props = $props();
-	const context = getContext();
 	const y = new Tween(0);
 	const scale = new Tween(0.3);
 	let show = $state(true);
@@ -42,7 +42,7 @@
 
 	onMount(async () => {
 		const timeScale = stateBetDerived.timeScale() || 1;
-		const totalDuration = (SECOND * 1.1) / timeScale;
+		const totalDuration = (SECOND * (isCelebrationWin(props.win.result) ? 0.82 : 0.53)) / timeScale;
 
 		// Pop-in scale animation
 		scale.set(1.28, { duration: 110 / timeScale, easing: backOut }).then(() => {
@@ -71,52 +71,20 @@
 		scale={{ x: scale.current, y: scale.current }}
 		zIndex={150}
 	>
-		<!-- Radiant Halo Glow -->
-		<Rectangle
-			width={PILL_WIDTH + 8}
-			height={PILL_HEIGHT + 8}
-			borderRadius={14}
-			backgroundColor={0xffd700}
-			backgroundAlpha={0.3}
-			borderColor={0xffffff}
-			borderWidth={1.5}
-			anchor={0.5}
-		/>
-
-		<!-- Floating Pill Base -->
-		<Rectangle
+		<BaseSprite
+			texture={PIXI.Texture.WHITE}
+			tint={0x183826}
+			alpha={0.96}
 			width={PILL_WIDTH}
 			height={PILL_HEIGHT}
-			borderRadius={10}
-			backgroundColor={0x07111e}
-			backgroundAlpha={0.96}
-			borderColor={0xffd700}
-			borderWidth={2}
 			anchor={0.5}
 		/>
-
-		<!-- Top Gold Accent Indicator -->
-		<Rectangle
-			y={-PILL_HEIGHT * 0.5 + 2.5}
-			width={PILL_WIDTH - 20}
-			height={2.5}
-			borderRadius={2}
-			backgroundColor={0xffe675}
-			backgroundAlpha={0.9}
-			anchor={0.5}
-		/>
-
-		<!-- Winning Amount Text -->
-		<Text
+		<StudioText
 			y={1}
 			text={bookEventAmountToCurrencyString(props.win.result)}
-			anchor={0.5}
-			style={{
-				fontFamily: 'system-ui, -apple-system, sans-serif',
-				fontSize: 14,
-				fontWeight: '900',
-				fill: 0xffea79,
-			}}
+			size={15}
+			maxWidth={PILL_WIDTH * 0.83}
+			tint={0xffea79}
 		/>
 	</Container>
 </FadeContainer>

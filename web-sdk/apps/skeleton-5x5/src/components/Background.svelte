@@ -1,38 +1,36 @@
 <script lang="ts">
-	import { BaseSprite, PIXI, type LoadedSprite } from 'pixi-svelte';
-	import { FadeContainer } from 'components-pixi';
-	import { SECOND } from 'constants-shared/time';
+	import { BaseSprite, PIXI } from 'pixi-svelte';
+	import { MediaQuery } from 'svelte/reactivity';
 	import { getContext } from '../game/context';
+	import { getPracticeBackdrop } from '../game/practiceLayout';
+	import { studioTexture } from '../game/studioVisuals';
+	import PracticeBackdropParallax from './PracticeBackdropParallax.svelte';
 
+	const { sunset }: { sunset: number } = $props();
 	const context = getContext();
-	const canvasSizes = $derived(context.stateLayoutDerived.canvasSizes());
-	const background = $derived(context.stateApp.loadedAssets.background as LoadedSprite | undefined);
-	const showFeatureBackground = $derived(context.stateGame.gameType === 'freegame');
-	const coverScale = $derived(
-		background
-			? Math.max(canvasSizes.width / background.width, canvasSizes.height / background.height)
-			: 1,
+	const parallax = new MediaQuery(
+		'(min-width: 960px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
 	);
+	const sizes = $derived(context.stateLayoutDerived.canvasSizes());
+	const assets = $derived(context.stateApp.loadedAssets);
+	const day = $derived(studioTexture(assets, 'background'));
+	const night = $derived(studioTexture(assets, 'background-bonus'));
+	const projection = $derived(getPracticeBackdrop(sizes, day));
 </script>
 
-{#if background}
-	{#snippet course(tint: number)}
-		<BaseSprite
-			texture={background}
-			anchor={0.5}
-			x={canvasSizes.width / 2}
-			y={canvasSizes.height / 2}
-			scale={coverScale}
-			{tint}
-		/>
-	{/snippet}
+{#snippet backdrop(
+	texture: PIXI.Texture,
+	alpha: number,
+	zIndex: number,
+	label: string,
+	visible: boolean,
+)}
+	<BaseSprite {texture} {alpha} {zIndex} {label} {visible} anchor={0.5} {...projection} />
+{/snippet}
 
-	<FadeContainer show duration={SECOND * 0.5} zIndex={-5}>
-		{@render course(0xffffff)}
-	</FadeContainer>
-	<FadeContainer show={showFeatureBackground} duration={SECOND * 0.5} zIndex={-4}>
-		{@render course(0x687ca0)}
-	</FadeContainer>
+{#if parallax.current}
+	<PracticeBackdropParallax {day} {night} {sunset} {projection} screenWidth={sizes.width} />
 {:else}
-	<BaseSprite texture={PIXI.Texture.WHITE} tint={0x07150e} {...canvasSizes} zIndex={-6} />
+	{@render backdrop(day, 1, -8, 'Day course', sunset < 1)}
+	{@render backdrop(night, sunset, -7, 'Sunset course', sunset > 0)}
 {/if}

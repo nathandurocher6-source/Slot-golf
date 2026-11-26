@@ -32,7 +32,8 @@
 		boardWithAnimateSymbols: async ({ symbolPositions }) => {
 			const getPromises = () =>
 				symbolPositions.map(async (position) => {
-					const reelSymbol = context.stateGame.board[position.reel]?.reelState?.symbols?.[position.row];
+					const reelSymbol =
+						context.stateGame.board[position.reel]?.reelState?.symbols?.[position.row];
 					if (!reelSymbol) return;
 					reelSymbol.symbolState = 'win';
 					await Promise.race([
@@ -51,14 +52,15 @@
 
 {#if show}
 	<BoardContext animate={false}>
-		<BoardContainer>
+		<BoardContainer label="Reel symbols">
 			<BoardMask />
 			<BoardBase />
 		</BoardContainer>
 	</BoardContext>
 
 	<BoardContext animate={true}>
-		<BoardContainer>
+		<BoardContainer label="Reel symbols">
+			<BoardMask />
 			<BoardBase />
 		</BoardContainer>
 	</BoardContext>

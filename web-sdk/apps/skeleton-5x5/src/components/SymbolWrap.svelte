@@ -18,9 +18,10 @@
 	const show = $derived(
 		(boardContext.animate && props.animating) || (!boardContext.animate && !props.animating),
 	);
-	const top = 0;
-	const bottom = SYMBOL_SIZE * BOARD_DIMENSIONS.y;
-	const inFrame = $derived(props.y >= top && props.y <= bottom);
+	// Include the animated offset and rotated tile corners in the culling margin.
+	const top = -SYMBOL_SIZE * 0.82;
+	const bottom = SYMBOL_SIZE * (BOARD_DIMENSIONS.y + 0.82);
+	const inFrame = $derived(props.y > top && props.y < bottom);
 </script>
 
 {#if show && inFrame}

@@ -161,14 +161,15 @@
 
 {#if show}
 	<BoardContext animate={false}>
-		<BoardContainer>
+		<BoardContainer label="Cascade symbols">
 			<BoardMask />
 			<TumbleBoardBase />
 		</BoardContainer>
 	</BoardContext>
 
 	<BoardContext animate={true}>
-		<BoardContainer>
+		<BoardContainer label="Cascade symbols">
+			<BoardMask />
 			<TumbleBoardBase />
 		</BoardContainer>
 	</BoardContext>
